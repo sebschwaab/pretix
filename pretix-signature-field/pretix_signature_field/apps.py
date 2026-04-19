@@ -17,6 +17,7 @@ class SignatureFieldApp(AppConfig):
         )
 
     def ready(self):
+        from . import signals  # noqa – registers all @receiver decorators
         from django.utils.translation import gettext_lazy as _
         from pretix.base.models import Question
         from pretix.base.models.orders import QuestionAnswer

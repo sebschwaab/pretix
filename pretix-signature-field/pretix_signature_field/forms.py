@@ -21,12 +21,11 @@ class SignatureWidget(forms.HiddenInput):
     When the user draws, the canvas content is serialised to a PNG data-URL
     and stored in the hidden input.
 
-    JavaScript in ``pretix_signature_field/signature.js`` wires everything up.
+    CSS and JS are injected via the html_head signal (signals.py) so that they
+    go through Pretix's django-compressor offline pipeline.  Do NOT declare a
+    class Media here: Pretix does not honour widget Media in its compressed
+    templates, and the files would never be served.
     """
-
-    class Media:
-        css = {'all': ('pretix_signature_field/signature.css',)}
-        js = ('pretix_signature_field/signature.js',)
 
     def render(self, name, value, attrs=None, renderer=None):
         final_attrs = self.build_attrs(attrs or {})

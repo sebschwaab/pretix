@@ -1,0 +1,8 @@
+{% load static %}
+{% load compress %}
+{% compress css file pretix_signature_field %}
+<link rel="stylesheet" type="text/css" href="{% static "pretix_signature_field/signature.css" %}">
+{% endcompress %}
+{% compress js file pretix_signature_field %}
+<script type="text/javascript" src="{% static "pretix_signature_field/signature.js" %}"></script>
+{% endcompress %}
