@@ -35,24 +35,20 @@ class SignatureWidget(forms.HiddenInput):
         # Render the standard hidden input
         hidden_html = super().render(name, value, attrs, renderer)
 
-        # Build the canvas container; all dynamic values are escaped
+        # Build the canvas container; all dynamic values are escaped.
+        # No inline styles — all visual rules live in signature.css.
         wrapper = (
-            '<div class="signature-pad-wrapper" '
+            '<div class="signature-pad-wrapper"'
             '     data-signature-input="{input_id}">'
             '  <div class="signature-pad-canvas-area">'
-            '    <canvas class="signature-pad-canvas"'
-            '      style="border:1px solid #ccc; cursor:crosshair;'
-            '             touch-action:none; display:block;'
-            '             width:100%; height:200px;"'
-            '    ></canvas>'
+            '    <canvas class="signature-pad-canvas"></canvas>'
             '  </div>'
-            '  <div class="signature-pad-toolbar" style="margin-top:6px;">'
+            '  <div class="signature-pad-toolbar">'
             '    <button type="button"'
             '            class="btn btn-sm btn-default signature-pad-clear">'
             '      {clear_label}'
             '    </button>'
-            '    <span class="text-muted signature-pad-hint"'
-            '          style="margin-left:10px; font-size:0.85em;">'
+            '    <span class="text-muted signature-pad-hint">'
             '      {hint_label}'
             '    </span>'
             '  </div>'
