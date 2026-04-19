@@ -1,0 +1,5 @@
+include README.rst
+include LICENSE
+recursive-include pretix_signature_field/static *
+recursive-include pretix_signature_field/templates *
+recursive-include pretix_signature_field/locale *

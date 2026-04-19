@@ -1,0 +1,43 @@
+# Traduction française — pretix-signature-field
+msgid ""
+msgstr ""
+"Project-Id-Version: pretix-signature-field 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-19 00:00+0000\n"
+"PO-Revision-Date: 2026-04-19 00:00+0000\n"
+"Last-Translator: Plombier Services <dev@plombier-services.fr>\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Handwritten signature"
+msgstr "Signature manuscrite"
+
+msgid "Signature Field"
+msgstr "Champ signature"
+
+msgid "Adds a handwritten signature question type to the checkout process. Buyers can sign directly in their browser using a touch or mouse gesture."
+msgstr "Ajoute un type de question « signature manuscrite » au processus de commande. Les acheteurs peuvent signer directement dans leur navigateur à l'aide d'un geste tactile ou à la souris."
+
+msgid "Clear signature"
+msgstr "Effacer la signature"
+
+msgid "Draw your signature in the box above"
+msgstr "Dessinez votre signature dans le cadre ci-dessus"
+
+msgid "Invalid signature format. Please draw your signature in the box."
+msgstr "Format de signature invalide. Veuillez dessiner votre signature dans le cadre."
+
+msgid "Invalid signature data."
+msgstr "Données de signature invalides."
+
+msgid "The signature image is too large. Please clear and re-sign."
+msgstr "L'image de la signature est trop volumineuse. Veuillez effacer et resigner."
+
+msgid "Signature"
+msgstr "Signature"
+
+msgid "(signature on file)"
+msgstr "(signature enregistrée)"
