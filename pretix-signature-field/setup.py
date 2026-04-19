@@ -23,7 +23,7 @@ setup(
     },
     entry_points={
         'pretix.plugin': [
-            'pretix_signature_field=pretix_signature_field.apps:SignatureFieldApp',
+            'pretix_signature_field=pretix_signature_field:SignatureFieldApp',
         ],
     },
     python_requires='>=3.9',
