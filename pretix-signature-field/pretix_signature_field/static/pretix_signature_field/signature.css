@@ -1,44 +1,95 @@
 /*
  * pretix-signature-field — stylesheet
+ * No inline styles anywhere; all rules are here.
  */
+
+/* ── Outer wrapper ──────────────────────────────────────────────────────────── */
 
 .signature-pad-wrapper {
     display: block;
     width: 100%;
-    max-width: 600px;
+    max-width: 640px;
+    /* Subtle card-like container to frame the whole widget */
+    background: #f9f9f9;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
+/* ── Canvas area (the "paper") ──────────────────────────────────────────────── */
+
 .signature-pad-canvas-area {
-    background: #fff;
+    position: relative;
+    background: #ffffff;
+    border: 2px dashed #9b9b9b;   /* dashed = "draw here" visual cue */
     border-radius: 4px;
     overflow: hidden;
+    /* Bottom label drawn via pseudo-element */
 }
+
+/* "X ___________" baseline hint at the bottom of the signing area */
+.signature-pad-canvas-area::before {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 32px;
+    left: 32px;
+    right: 32px;
+    height: 1px;
+    background: #ccc;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.signature-pad-canvas-area::after {
+    content: '✕';
+    display: block;
+    position: absolute;
+    bottom: 34px;
+    left: 16px;
+    font-size: 14px;
+    color: #bbb;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Highlight on hover to invite interaction */
+.signature-pad-canvas-area:hover {
+    border-color: #337ab7;
+    border-style: solid;
+}
+
+/* ── Canvas element ─────────────────────────────────────────────────────────── */
 
 .signature-pad-canvas {
     display: block;
     width: 100%;
-    height: 200px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    height: 180px;          /* drawing area height */
     cursor: crosshair;
-    touch-action: none;
-    background: #fff;
+    touch-action: none;     /* prevent browser touch-scroll while drawing */
+    background: transparent;
+    position: relative;
+    z-index: 2;             /* above the ::before / ::after baseline */
 }
 
-.signature-pad-canvas:focus {
-    outline: none;
-    border-color: #337ab7;
-    box-shadow: 0 0 4px rgba(51, 122, 183, 0.5);
-}
+/* ── Toolbar (Clear button + hint) ─────────────────────────────────────────── */
 
 .signature-pad-toolbar {
-    margin-top: 6px;
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-top: 10px;
+}
+
+.signature-pad-clear {
+    /* inherits .btn .btn-sm .btn-default from Bootstrap / pretix theme */
+    flex-shrink: 0;
 }
 
 .signature-pad-hint {
-    font-size: 0.85em;
-    color: #666;
+    font-size: 0.82em;
+    color: #888;
+    font-style: italic;
 }
