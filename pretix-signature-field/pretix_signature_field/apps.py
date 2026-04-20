@@ -132,11 +132,8 @@ class SignatureFieldApp(AppConfig):
                 if self_ans.answer:
                     # answer is a validated data:image/png;base64,... URL
                     return _mark_safe(
-                        '<img src="{src}"'
-                        '     alt="{alt}"'
-                        '     class="signature-answer-preview">'.format(
-                            src=self_ans.answer,          # already validated base64
-                            alt=escape(str(_('Signature'))),
+                        '<img src="{src}">'.format(
+                            src=self_ans.answer,
                         )
                     )
                 return str(_('(no signature)'))

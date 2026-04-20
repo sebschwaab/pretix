@@ -85,7 +85,7 @@ def html_head_control(sender, request=None, **kwargs):
     """
     return mark_safe(
         '<style>'
-        '.signature-answer-preview {'
+        '.answers dd img {'
         '  display: block;'
         '  max-width: 300px;'
         '  max-height: 120px;'
