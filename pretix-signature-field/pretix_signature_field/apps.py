@@ -136,3 +136,63 @@ class SignatureFieldApp(AppConfig):
 
         QuestionAnswer.to_string = _patched_to_string
         QuestionAnswer.to_string_i18n = _patched_to_string_i18n
+
+        # ── 4. Patch Renderer._draw_imagearea to render SIG images in PDFs ──
+        #
+        # The default _draw_imagearea feeds the file object to ThumbnailingImageReader,
+        # which is designed for Django FieldFile objects.  Our SIG answer is a
+        # data:image/png;base64,... URL that signals.py decodes into a BytesIO.
+        # We intercept that case and draw the image directly via PIL + ImageReader
+        # so that it is reliably rendered in PDF tickets.
+        import logging as _logging
+        from io import BytesIO as _BytesIO
+
+        from PIL import Image as _PILImage
+        from pretix.base.pdf import Renderer
+        from reportlab.lib.units import mm as _mm
+        from reportlab.lib.utils import ImageReader as _RLImageReader
+
+        _pdf_logger = _logging.getLogger(__name__)
+        _orig_draw_imagearea = Renderer._draw_imagearea
+
+        def _patched_draw_imagearea(self_renderer, canvas, op, order, o):
+            content = o.get('content', '')
+            if content and content in self_renderer.images:
+                ev = self_renderer._get_ev(op, order)
+                try:
+                    image_data = self_renderer.images[content]['evaluate'](op, order, ev)
+                except Exception:
+                    image_data = None
+
+                if isinstance(image_data, _BytesIO):
+                    try:
+                        image_data.seek(0)
+                        pil_img = _PILImage.open(image_data)
+                        pil_img.load()
+
+                        area_w = float(o['width']) * _mm
+                        area_h = float(o['height']) * _mm
+                        img_w, img_h = pil_img.size
+
+                        scale = min(area_w / img_w, area_h / img_h)
+                        draw_w = img_w * scale
+                        draw_h = img_h * scale
+                        draw_x = float(o['left']) * _mm + (area_w - draw_w) / 2
+                        draw_y = float(o['bottom']) * _mm + (area_h - draw_h) / 2
+
+                        image_data.seek(0)
+                        canvas.drawImage(
+                            image=_RLImageReader(image_data),
+                            x=draw_x,
+                            y=draw_y,
+                            width=draw_w,
+                            height=draw_h,
+                            mask='auto',
+                        )
+                        return
+                    except Exception:
+                        _pdf_logger.exception("Cannot draw SIG image in PDF")
+
+            _orig_draw_imagearea(self_renderer, canvas, op, order, o)
+
+        Renderer._draw_imagearea = _patched_draw_imagearea
