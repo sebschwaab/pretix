@@ -1,9 +1,63 @@
+import base64
+import hashlib
+from functools import partial
+from io import BytesIO
+
 from django.dispatch import receiver
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
+from pretix.base.signals import layout_image_variables
 from pretix.control.signals import html_head as control_html_head
 from pretix.presale.signals import html_head as presale_html_head
+
+
+@receiver(layout_image_variables, dispatch_uid="pretix_signature_field_layout_image_variables")
+def images_from_sig_questions(sender, *args, **kwargs):
+    from pretix.base.models import Question
+
+    def get_sig_image(op, order, event, question_id, etag):
+        a = None
+        if op.addon_to:
+            if 'answers' in getattr(op.addon_to, '_prefetched_objects_cache', {}):
+                try:
+                    a = [ans for ans in op.addon_to.answers.all() if ans.question_id == question_id][0]
+                except IndexError:
+                    pass
+            else:
+                a = op.addon_to.answers.filter(question_id=question_id).first()
+
+        if 'answers' in getattr(op, '_prefetched_objects_cache', {}):
+            try:
+                a = [ans for ans in op.answers.all() if ans.question_id == question_id][0]
+            except IndexError:
+                pass
+        else:
+            a = op.answers.filter(question_id=question_id).first() or a
+
+        if not a or not a.answer:
+            return None
+
+        if etag:
+            return hashlib.sha1(a.answer.encode()).hexdigest()
+
+        try:
+            _header, data = a.answer.split(',', 1)
+            return BytesIO(base64.b64decode(data))
+        except Exception:
+            return None
+
+    d = {}
+    for q in sender.questions.all():
+        if q.type != Question.TYPE_SIGNATURE:
+            continue
+        d['question_{}'.format(q.identifier)] = {
+            'label': _('Question: {question}').format(question=q.question),
+            'evaluate': partial(get_sig_image, question_id=q.pk, etag=False),
+            'etag': partial(get_sig_image, question_id=q.pk, etag=True),
+        }
+    return d
 
 
 @receiver(presale_html_head, dispatch_uid="pretix_signature_field_presale_head")

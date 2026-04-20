@@ -142,7 +142,8 @@ class SignatureFieldApp(AppConfig):
                 return str(_('(no signature)'))
             return _orig_to_string(self_ans, use_cached=use_cached)
 
+        def _patched_to_string_i18n(self_ans):
+            return _patched_to_string(self_ans, use_cached=False)
+
         QuestionAnswer.to_string = _patched_to_string
-        QuestionAnswer.to_string_i18n = property(
-            lambda self_ans: _patched_to_string(self_ans, use_cached=False)
-        )
+        QuestionAnswer.to_string_i18n = _patched_to_string_i18n
