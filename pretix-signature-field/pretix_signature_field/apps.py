@@ -202,3 +202,40 @@ class SignatureFieldApp(AppConfig):
             _orig_draw_imagearea(self_renderer, canvas, op, order, o)
 
         Renderer._draw_imagearea = _patched_draw_imagearea
+
+        # ── 5. Patch Renderer.draw_page to redirect SIG text elements ────────
+        #
+        # When the PDF designer places a SIG question variable inside a textarea
+        # or textcontainer, ReportLab's Paragraph parser cannot render the image.
+        # We intercept those elements at draw time and re-route them through
+        # _draw_imagearea so the signature is always drawn correctly.
+        _orig_draw_page = Renderer.draw_page
+
+        def _patched_draw_page(self_renderer, canvas, order, op, show_page=True, only_page=None):
+            from pretix.base.models import Question as _Question
+
+            sig_keys = set()
+            for q in self_renderer.event.questions.all():
+                if q.type == _Question.TYPE_SIGNATURE:
+                    sig_keys.add('question_{}'.format(q.identifier))
+                    sig_keys.add('question_{}'.format(q.pk))
+
+            if not sig_keys:
+                return _orig_draw_page(self_renderer, canvas, order, op,
+                                       show_page=show_page, only_page=only_page)
+
+            patched_layout = []
+            for o in self_renderer.layout:
+                if o.get('type') in ('textarea', 'textcontainer') and o.get('content', '') in sig_keys:
+                    o = dict(o, type='imagearea')
+                patched_layout.append(o)
+
+            orig_layout = self_renderer.layout
+            self_renderer.layout = patched_layout
+            try:
+                _orig_draw_page(self_renderer, canvas, order, op,
+                                show_page=show_page, only_page=only_page)
+            finally:
+                self_renderer.layout = orig_layout
+
+        Renderer.draw_page = _patched_draw_page
