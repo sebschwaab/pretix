@@ -1,5 +1,4 @@
 from django.apps import AppConfig
-from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
 
 
@@ -123,19 +122,12 @@ class SignatureFieldApp(AppConfig):
         # respects SafeData: if the value is already mark_safe(), it is NOT
         # HTML-escaped.  Returning mark_safe('<img ...>') therefore lets the
         # image tag pass through unchanged and displays the signature inline.
-        from django.utils.safestring import mark_safe as _mark_safe
-
         _orig_to_string = QuestionAnswer.to_string
 
         def _patched_to_string(self_ans, use_cached=True):
             if self_ans.question.type == Question.TYPE_SIGNATURE:
                 if self_ans.answer:
-                    # answer is a validated data:image/png;base64,... URL
-                    return _mark_safe(
-                        '<img src="{src}">'.format(
-                            src=self_ans.answer,
-                        )
-                    )
+                    return str(_('(signature enregistrée)'))
                 return str(_('(no signature)'))
             return _orig_to_string(self_ans, use_cached=use_cached)
 
