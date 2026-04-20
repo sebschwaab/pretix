@@ -122,12 +122,18 @@ class SignatureFieldApp(AppConfig):
         # respects SafeData: if the value is already mark_safe(), it is NOT
         # HTML-escaped.  Returning mark_safe('<img ...>') therefore lets the
         # image tag pass through unchanged and displays the signature inline.
+        from django.utils.safestring import mark_safe as _mark_safe
+
         _orig_to_string = QuestionAnswer.to_string
 
         def _patched_to_string(self_ans, use_cached=True):
             if self_ans.question.type == Question.TYPE_SIGNATURE:
                 if self_ans.answer:
-                    return str(_('(signature enregistrée)'))
+                    return _mark_safe(
+                        '<img src="{src}" style="max-width:300px; max-height:150px;">'.format(
+                            src=self_ans.answer,
+                        )
+                    )
                 return str(_('(no signature)'))
             return _orig_to_string(self_ans, use_cached=use_cached)
 
