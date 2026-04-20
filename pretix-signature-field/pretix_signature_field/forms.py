@@ -1,57 +1,79 @@
+import base64
 import re
+from io import BytesIO
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-# Maximum size for a base64-encoded PNG (10 MB uncompressed → ≈14 MB base64)
-MAX_SIGNATURE_SIZE = 14 * 1024 * 1024  # characters
-
-# Accepted MIME types
 _SIGNATURE_DATA_URL_RE = re.compile(
     r'^data:image/(png|jpeg|jpg);base64,[A-Za-z0-9+/=]+$'
 )
+MAX_SIGNATURE_BYTES = 10 * 1024 * 1024  # 10 MB decoded
 
 
 class SignatureWidget(forms.Widget):
     """
     Renders an HTML5 canvas signature pad.
 
-    The drawn signature is serialised to a PNG data-URL and stored in a hidden
-    <input> that is submitted with the form.
+    On submit, the canvas content is serialised to a PNG data-URL and placed
+    in a hidden <input>.  value_from_datadict decodes that data-URL to an
+    InMemoryUploadedFile so that SignatureField (a FileField subclass) is
+    handled by Pretix's native _save_to_answer path, which stores the file in
+    QuestionAnswer.file exactly like TYPE_FILE questions.
 
-    Inherits from forms.Widget (NOT HiddenInput) so that:
-      - bootstrap3 generates the full form-group / label wrapper around it
-      - the field label is visible above the canvas
-      - the required indicator (*) and help text are displayed normally
-      - error messages are shown in the right place
-
-    CSS and JS are injected via the html_head signal (signals.py) so that they
-    go through Pretix's django-compressor offline pipeline.  Do NOT declare a
-    class Media here: Pretix does not honour widget Media in its compressed
-    templates, and the files would never be served.
+    If value is an existing FieldFile (edit form), its URL is passed via
+    data-signature-preview so the JS can pre-draw it in the canvas.
     """
 
     def value_from_datadict(self, data, files, name):
-        # The signature is posted as a plain text field (base64 data-URL).
-        return data.get(name)
+        raw = (data.get(name) or '').strip()
+        if not raw or not raw.startswith('data:'):
+            return None
+
+        if not _SIGNATURE_DATA_URL_RE.match(raw):
+            # Keep the raw string so to_python can raise a clean ValidationError.
+            return raw
+
+        try:
+            _header, b64data = raw.split(',', 1)
+            png_bytes = base64.b64decode(b64data)
+            if len(png_bytes) > MAX_SIGNATURE_BYTES:
+                return raw  # to_python will reject it with a readable error
+            bio = BytesIO(png_bytes)
+            return InMemoryUploadedFile(
+                bio,
+                field_name=name,
+                name='signature.png',
+                content_type='image/png',
+                size=len(png_bytes),
+                charset=None,
+            )
+        except Exception:
+            return raw  # to_python will raise ValidationError
 
     def render(self, name, value, attrs=None, renderer=None):
         final_attrs = self.build_attrs(attrs or {})
         element_id = final_attrs.get('id', 'id_' + name)
 
-        # Render the hidden <input> that holds the base64 data-URL.
-        # We instantiate HiddenInput directly so we don't inherit its
-        # is_hidden=True behaviour on the outer widget.
-        hidden_html = forms.HiddenInput().render(name, value, {'id': element_id})
+        # If value is an existing FieldFile, expose its URL so the JS can
+        # pre-draw the stored signature into the canvas.
+        preview_url = ''
+        if hasattr(value, 'url'):
+            try:
+                preview_url = value.url
+            except Exception:
+                pass
 
-        # Build the canvas container.
-        # All user-controlled values are escaped; no inline styles.
+        hidden_html = forms.HiddenInput().render(name, None, {'id': element_id})
+
         wrapper = (
             '<div class="signature-pad-wrapper"'
-            '     data-signature-input="{input_id}">'
+            '     data-signature-input="{input_id}"'
+            '     data-signature-preview="{preview_url}">'
             '  <div class="signature-pad-canvas-area">'
             '    <canvas class="signature-pad-canvas"></canvas>'
             '  </div>'
@@ -68,47 +90,40 @@ class SignatureWidget(forms.Widget):
             '</div>'
         ).format(
             input_id=escape(element_id),
+            preview_url=escape(preview_url),
             clear_label=escape(str(_('Clear signature'))),
             hint_label=escape(str(_('Draw your signature in the box above'))),
-            hidden=hidden_html,  # already marked safe by Django
+            hidden=hidden_html,
         )
         return mark_safe(wrapper)
 
 
-class SignatureField(forms.CharField):
+class SignatureField(forms.FileField):
     """
-    A form field that accepts a base64-encoded PNG data URL produced by
-    :class:`SignatureWidget`.
+    Accepts a PNG data-URL from SignatureWidget, converts it to an
+    InMemoryUploadedFile, and stores it via QuestionAnswer.file — identical
+    to how Pretix handles TYPE_FILE questions.
 
-    The value is stored as-is in ``QuestionAnswer.answer``.
-    Required validation works identically to other CharField-based questions:
-    an empty string (blank canvas) triggers the standard "This field is
-    required." error.
+    When re-editing an order, clean(data=None, initial=FieldFile) returns the
+    existing FieldFile unchanged (standard FileField behaviour), so the user
+    only needs to re-sign if they want to update the signature.
     """
 
     widget = SignatureWidget
 
-    def __init__(self, *args, **kwargs):
-        # Signatures can be large; do not impose a max_length here.
-        kwargs.setdefault('max_length', None)
-        super().__init__(*args, **kwargs)
-
-    def to_python(self, value):
-        value = super().to_python(value)
-        if not value:
-            return value
-        return value.strip()
-
-    def validate(self, value):
-        # super() handles the required check (empty string → ValidationError)
-        super().validate(value)
-        if not value:
-            return
-        if len(value) > MAX_SIGNATURE_SIZE:
-            raise ValidationError(
-                _('The signature image is too large. Please clear and re-sign.')
-            )
-        if not _SIGNATURE_DATA_URL_RE.match(value):
+    def to_python(self, data):
+        if data is None:
+            return None
+        if hasattr(data, 'read'):
+            # Already decoded by value_from_datadict — pass through.
+            return data
+        if isinstance(data, str):
+            # Widget returned the raw string because decoding failed.
+            if len(data) > MAX_SIGNATURE_BYTES * 1.4:
+                raise ValidationError(
+                    _('The signature image is too large. Please clear and re-sign.')
+                )
             raise ValidationError(
                 _('Invalid signature format. Please draw your signature in the box.')
             )
+        return super().to_python(data)

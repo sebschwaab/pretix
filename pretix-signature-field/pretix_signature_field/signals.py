@@ -36,17 +36,26 @@ def images_from_sig_questions(sender, *args, **kwargs):
         else:
             a = op.answers.filter(question_id=question_id).first() or a
 
-        if not a or not a.answer:
+        if not a:
             return None
 
-        if etag:
-            return hashlib.sha1(a.answer.encode()).hexdigest()
+        # New format: PNG saved as a real file in answer.file (like TYPE_FILE).
+        if a.file:
+            if etag:
+                return hashlib.sha1(a.file.name.encode()).hexdigest()
+            return a.file
 
-        try:
-            _header, data = a.answer.split(',', 1)
-            return BytesIO(base64.b64decode(data))
-        except Exception:
-            return None
+        # Backward compat: old answers that stored base64 in answer.answer.
+        if a.answer and a.answer.startswith('data:'):
+            if etag:
+                return hashlib.sha1(a.answer.encode()).hexdigest()
+            try:
+                _header, b64data = a.answer.split(',', 1)
+                return BytesIO(base64.b64decode(b64data))
+            except Exception:
+                pass
+
+        return None
 
     d = {}
     for q in sender.questions.all():

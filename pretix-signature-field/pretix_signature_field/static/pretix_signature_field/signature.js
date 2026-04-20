@@ -27,10 +27,11 @@
         if (wrapper.hasAttribute('data-sig-ready')) { return; }
         wrapper.setAttribute('data-sig-ready', '1');
 
-        var inputId    = wrapper.getAttribute('data-signature-input');
+        var inputId     = wrapper.getAttribute('data-signature-input');
+        var previewUrl  = wrapper.getAttribute('data-signature-preview') || '';
         var hiddenInput = document.getElementById(inputId);
-        var canvas     = wrapper.querySelector('.signature-pad-canvas');
-        var clearBtn   = wrapper.querySelector('.signature-pad-clear');
+        var canvas      = wrapper.querySelector('.signature-pad-canvas');
+        var clearBtn    = wrapper.querySelector('.signature-pad-clear');
 
         if (!hiddenInput || !canvas) { return; }
 
@@ -96,10 +97,15 @@
             }
         }
 
-        // Initial sizing – defer one animation frame so CSS layout is settled
+        // Initial sizing – defer one animation frame so CSS layout is settled.
+        // Restore order of priority:
+        //   1. A data-URL already in the hidden input (draft re-display).
+        //   2. data-signature-preview URL pointing to a stored file.
+        //   3. Empty canvas with placeholder.
         requestAnimationFrame(function () {
-            resizeCanvas(hiddenInput.value || null);
-            if (hiddenInput.value) { hasMark = true; }
+            var restoreUrl = hiddenInput.value || previewUrl || null;
+            resizeCanvas(restoreUrl);
+            if (restoreUrl) { hasMark = true; }
         });
 
         /* ── Coordinate helper ───────────────────────────────────────────── */

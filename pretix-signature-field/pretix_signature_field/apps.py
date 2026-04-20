@@ -1,5 +1,10 @@
+import logging
+from io import BytesIO
+
 from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
+
+_pdf_logger = logging.getLogger(__name__)
 
 
 class SignatureFieldApp(AppConfig):
@@ -18,12 +23,18 @@ class SignatureFieldApp(AppConfig):
 
     def ready(self):
         from . import signals  # noqa – registers all @receiver decorators
+        from django.utils.html import escape as _escape
+        from django.utils.safestring import mark_safe as _mark_safe
         from django.utils.translation import gettext_lazy as _
+        from pretix.base.forms.questions import BaseQuestionsForm
         from pretix.base.models import Question
         from pretix.base.models.orders import QuestionAnswer
-        from pretix.base.forms.questions import BaseQuestionsForm
+        from pretix.base.pdf import Renderer
+        from PIL import Image as _PILImage
+        from reportlab.lib.units import mm as _mm
+        from reportlab.lib.utils import ImageReader as _RLImageReader
 
-        # ── 1. Register the new question type on the Question model ──────────
+        # ── 1. Register the new question type ────────────────────────────────
         Question.TYPE_SIGNATURE = 'SIG'
         new_choice = (Question.TYPE_SIGNATURE, _('Handwritten signature'))
 
@@ -33,25 +44,15 @@ class SignatureFieldApp(AppConfig):
         if not already_registered:
             Question.TYPE_CHOICES = Question.TYPE_CHOICES + (new_choice,)
 
-        # Also update the field-level choices so that admin forms and
-        # model-level validation (full_clean) accept 'SIG'.
         try:
             Question._meta.get_field('type').choices = Question.TYPE_CHOICES
         except Exception:
-            pass  # non-critical; admin fallback is the tuple on the class
+            pass
 
-        # ── 2. Monkey-patch BaseQuestionsForm to handle SIG questions ────────
+        # ── 2. Patch BaseQuestionsForm.__init__ ───────────────────────────────
         _orig_init = BaseQuestionsForm.__init__
 
         def _patched_init(self_form, *args, **kwargs):
-            """
-            Intercepts the form initialisation to:
-            1. Temporarily remove SIG questions from the pre-fetched list so
-               that the original __init__ (which has no SIG branch) does not
-               crash with a NameError.
-            2. Call the original __init__.
-            3. Add a SignatureField for each SIG question.
-            """
             cartpos = kwargs.get('cartpos')
             orderpos = kwargs.get('orderpos')
             pos = cartpos or orderpos
@@ -66,7 +67,6 @@ class SignatureFieldApp(AppConfig):
                     if q.type == Question.TYPE_SIGNATURE
                 ]
                 if sig_questions:
-                    # Hide SIG questions from the original code path
                     pos.item.questions_to_ask = [
                         q for q in original_questions
                         if q.type != Question.TYPE_SIGNATURE
@@ -75,11 +75,9 @@ class SignatureFieldApp(AppConfig):
             try:
                 _orig_init(self_form, *args, **kwargs)
             finally:
-                # Always restore the original list, even if __init__ raised
                 if original_questions is not None and pos:
                     pos.item.questions_to_ask = original_questions
 
-            # ── Add a SignatureField for each SIG question ───────────────────
             if not sig_questions or pos is None:
                 return
 
@@ -89,7 +87,11 @@ class SignatureFieldApp(AppConfig):
 
             for q in sig_questions:
                 answers = [a for a in pos.answerlist if a.question_id == q.id]
-                initial = answers[0].answer if answers else None
+                # Use the stored file as initial (like TYPE_FILE) so that
+                # FileField.clean(None, initial=FieldFile) preserves it on
+                # re-submit without re-signing.
+                existing = answers[0] if answers else None
+                initial = existing.file if existing and existing.file else None
 
                 field = SignatureField(
                     label=str(q.question),
@@ -98,8 +100,8 @@ class SignatureFieldApp(AppConfig):
                     initial=initial,
                 )
                 field.question = q
-                if answers:
-                    field.answer = answers[0]
+                if existing:
+                    field.answer = existing
 
                 if q.dependency_question_id:
                     field.widget.attrs['data-question-dependency'] = q.dependency_question_id
@@ -113,25 +115,32 @@ class SignatureFieldApp(AppConfig):
 
         BaseQuestionsForm.__init__ = _patched_init
 
-        # ── 3. Patch QuestionAnswer.to_string to show the signature image ───
-        #
-        # The admin order detail template renders answers as:
-        #   {{ q.answer.to_string_i18n|linebreaksbr }}
-        #
-        # Django's linebreaksbr filter calls conditional_escape(), which
-        # respects SafeData: if the value is already mark_safe(), it is NOT
-        # HTML-escaped.  Returning mark_safe('<img ...>') therefore lets the
-        # image tag pass through unchanged and displays the signature inline.
-        from django.utils.safestring import mark_safe as _mark_safe
-
+        # ── 3. Patch QuestionAnswer.to_string for back-office display ─────────
+        # The admin order-detail template uses {{ q.answer.to_string_i18n|linebreaksbr }}
+        # for non-FILE types.  We return an <img> pointing to the stored file
+        # (or backward-compat data URL for old answers that pre-date file storage).
         _orig_to_string = QuestionAnswer.to_string
 
         def _patched_to_string(self_ans, use_cached=True):
             if self_ans.question.type == Question.TYPE_SIGNATURE:
-                if self_ans.answer:
+                if self_ans.file:
+                    url = self_ans.backend_file_url or ''
+                    if not url:
+                        try:
+                            url = self_ans.file.url
+                        except Exception:
+                            pass
+                    if url:
+                        return _mark_safe(
+                            '<img src="{url}" style="max-width:300px; max-height:150px;">'.format(
+                                url=_escape(url),
+                            )
+                        )
+                # Backward compat: old answers stored base64 in .answer
+                if self_ans.answer and self_ans.answer.startswith('data:'):
                     return _mark_safe(
-                        '<img src="{src}" style="max-width:300px; max-height:150px;">'.format(
-                            src=self_ans.answer,
+                        '<img src="{url}" style="max-width:300px; max-height:150px;">'.format(
+                            url=_escape(self_ans.answer),
                         )
                     )
                 return str(_('(no signature)'))
@@ -143,22 +152,10 @@ class SignatureFieldApp(AppConfig):
         QuestionAnswer.to_string = _patched_to_string
         QuestionAnswer.to_string_i18n = _patched_to_string_i18n
 
-        # ── 4. Patch Renderer._draw_imagearea to render SIG images in PDFs ──
-        #
-        # The default _draw_imagearea feeds the file object to ThumbnailingImageReader,
-        # which is designed for Django FieldFile objects.  Our SIG answer is a
-        # data:image/png;base64,... URL that signals.py decodes into a BytesIO.
-        # We intercept that case and draw the image directly via PIL + ImageReader
-        # so that it is reliably rendered in PDF tickets.
-        import logging as _logging
-        from io import BytesIO as _BytesIO
-
-        from PIL import Image as _PILImage
-        from pretix.base.pdf import Renderer
-        from reportlab.lib.units import mm as _mm
-        from reportlab.lib.utils import ImageReader as _RLImageReader
-
-        _pdf_logger = _logging.getLogger(__name__)
+        # ── 4. Patch Renderer._draw_imagearea (backward compat for old data: answers)
+        # New answers have answer.file set; the core ThumbnailingImageReader handles
+        # FieldFile natively.  This patch only activates for the old base64 format
+        # (where the signal returns a BytesIO) so existing tickets keep working.
         _orig_draw_imagearea = Renderer._draw_imagearea
 
         def _patched_draw_imagearea(self_renderer, canvas, op, order, o):
@@ -170,7 +167,7 @@ class SignatureFieldApp(AppConfig):
                 except Exception:
                     image_data = None
 
-                if isinstance(image_data, _BytesIO):
+                if isinstance(image_data, BytesIO):
                     try:
                         image_data.seek(0)
                         pil_img = _PILImage.open(image_data)
@@ -203,20 +200,16 @@ class SignatureFieldApp(AppConfig):
 
         Renderer._draw_imagearea = _patched_draw_imagearea
 
-        # ── 5. Patch Renderer.draw_page to redirect SIG text elements ────────
-        #
-        # When the PDF designer places a SIG question variable inside a textarea
-        # or textcontainer, ReportLab's Paragraph parser cannot render the image.
-        # We intercept those elements at draw time and re-route them through
-        # _draw_imagearea so the signature is always drawn correctly.
+        # ── 5. Patch Renderer.draw_page: redirect SIG text elements to image rendering
+        # If the PDF designer placed a SIG question in a textarea/textcontainer,
+        # ReportLab's Paragraph cannot render images.  Silently redirect those
+        # elements to _draw_imagearea before drawing each page.
         _orig_draw_page = Renderer.draw_page
 
         def _patched_draw_page(self_renderer, canvas, order, op, show_page=True, only_page=None):
-            from pretix.base.models import Question as _Question
-
             sig_keys = set()
             for q in self_renderer.event.questions.all():
-                if q.type == _Question.TYPE_SIGNATURE:
+                if q.type == Question.TYPE_SIGNATURE:
                     sig_keys.add('question_{}'.format(q.identifier))
                     sig_keys.add('question_{}'.format(q.pk))
 
