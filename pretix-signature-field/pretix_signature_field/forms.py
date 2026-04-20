@@ -15,11 +15,18 @@ _SIGNATURE_DATA_URL_RE = re.compile(
 )
 
 
-class SignatureWidget(forms.HiddenInput):
+class SignatureWidget(forms.Widget):
     """
-    Renders a hidden <input> alongside an HTML5 <canvas> signature pad.
-    When the user draws, the canvas content is serialised to a PNG data-URL
-    and stored in the hidden input.
+    Renders an HTML5 canvas signature pad.
+
+    The drawn signature is serialised to a PNG data-URL and stored in a hidden
+    <input> that is submitted with the form.
+
+    Inherits from forms.Widget (NOT HiddenInput) so that:
+      - bootstrap3 generates the full form-group / label wrapper around it
+      - the field label is visible above the canvas
+      - the required indicator (*) and help text are displayed normally
+      - error messages are shown in the right place
 
     CSS and JS are injected via the html_head signal (signals.py) so that they
     go through Pretix's django-compressor offline pipeline.  Do NOT declare a
@@ -27,15 +34,21 @@ class SignatureWidget(forms.HiddenInput):
     templates, and the files would never be served.
     """
 
+    def value_from_datadict(self, data, files, name):
+        # The signature is posted as a plain text field (base64 data-URL).
+        return data.get(name)
+
     def render(self, name, value, attrs=None, renderer=None):
         final_attrs = self.build_attrs(attrs or {})
         element_id = final_attrs.get('id', 'id_' + name)
 
-        # Render the standard hidden input
-        hidden_html = super().render(name, value, attrs, renderer)
+        # Render the hidden <input> that holds the base64 data-URL.
+        # We instantiate HiddenInput directly so we don't inherit its
+        # is_hidden=True behaviour on the outer widget.
+        hidden_html = forms.HiddenInput().render(name, value, {'id': element_id})
 
-        # Build the canvas container; all dynamic values are escaped.
-        # No inline styles — all visual rules live in signature.css.
+        # Build the canvas container.
+        # All user-controlled values are escaped; no inline styles.
         wrapper = (
             '<div class="signature-pad-wrapper"'
             '     data-signature-input="{input_id}">'
@@ -64,10 +77,13 @@ class SignatureWidget(forms.HiddenInput):
 
 class SignatureField(forms.CharField):
     """
-    A form field that accepts a base64-encoded PNG data URL produced by the
+    A form field that accepts a base64-encoded PNG data URL produced by
     :class:`SignatureWidget`.
 
     The value is stored as-is in ``QuestionAnswer.answer``.
+    Required validation works identically to other CharField-based questions:
+    an empty string (blank canvas) triggers the standard "This field is
+    required." error.
     """
 
     widget = SignatureWidget
@@ -84,6 +100,7 @@ class SignatureField(forms.CharField):
         return value.strip()
 
     def validate(self, value):
+        # super() handles the required check (empty string → ValidationError)
         super().validate(value)
         if not value:
             return

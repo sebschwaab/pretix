@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
 
 
@@ -113,12 +114,32 @@ class SignatureFieldApp(AppConfig):
 
         BaseQuestionsForm.__init__ = _patched_init
 
-        # ── 3. Patch QuestionAnswer.to_string to display SIG answers nicely ─
+        # ── 3. Patch QuestionAnswer.to_string to show the signature image ───
+        #
+        # The admin order detail template renders answers as:
+        #   {{ q.answer.to_string_i18n|linebreaksbr }}
+        #
+        # Django's linebreaksbr filter calls conditional_escape(), which
+        # respects SafeData: if the value is already mark_safe(), it is NOT
+        # HTML-escaped.  Returning mark_safe('<img ...>') therefore lets the
+        # image tag pass through unchanged and displays the signature inline.
+        from django.utils.safestring import mark_safe as _mark_safe
+
         _orig_to_string = QuestionAnswer.to_string
 
         def _patched_to_string(self_ans, use_cached=True):
             if self_ans.question.type == Question.TYPE_SIGNATURE:
-                return str(_('(signature on file)'))
+                if self_ans.answer:
+                    # answer is a validated data:image/png;base64,... URL
+                    return _mark_safe(
+                        '<img src="{src}"'
+                        '     alt="{alt}"'
+                        '     class="signature-answer-preview">'.format(
+                            src=self_ans.answer,          # already validated base64
+                            alt=escape(str(_('Signature'))),
+                        )
+                    )
+                return str(_('(no signature)'))
             return _orig_to_string(self_ans, use_cached=use_cached)
 
         QuestionAnswer.to_string = _patched_to_string
