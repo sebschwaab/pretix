@@ -1,0 +1,178 @@
+{% load compress %}
+{% load static %}
+{% load i18n %}
+{% load safelink %}
+{% load statici18n %}
+{% load thumb %}
+<!DOCTYPE html>
+<html{% if rtl %} dir="rtl" class="rtl"{% endif %} lang="{{ html_locale }}" data-theme="">
+<head>
+  <meta charset="utf-8">
+  <title>{% block thetitle %}{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="origin">
+
+  {# ── Pretix core CSS (Bootstrap 3 + pretix styles) ── #}
+  {% compress css file presale %}
+    <link rel="stylesheet" type="text/x-scss" href="{% static "pretixpresale/scss/main.scss" %}"/>
+  {% endcompress %}
+  {% if css_theme %}
+    <link rel="stylesheet" type="text/css" href="{{ css_theme }}" />
+  {% endif %}
+
+  {# ── Modern theme CSS (overrides) ── #}
+  <link rel="stylesheet" href="{% static "pretix_modern_theme/modern.css" %}">
+
+  {# ── Dark mode init — runs before first paint to avoid flash ── #}
+  <script>
+  (function(){
+    var k='mt-theme';
+    var t=localStorage.getItem(k)||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+    document.documentElement.setAttribute('data-theme',t);
+  }());
+  </script>
+
+  {# ── Pretix JS bundle ── #}
+  {% include "pretixpresale/fragment_js.html" %}
+
+  {# ── Plugin html_head injections (other plugins) ── #}
+  {{ html_head|safe }}
+
+  {% block custom_header %}{% endblock %}
+
+  {# ── Favicons ── #}
+  {% if settings.favicon %}
+    <link rel="icon" href="{{ settings.favicon|thumb:'16x16^' }}">
+    <link rel="shortcut icon" href="{{ settings.favicon|thumb:'16x16^' }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ settings.favicon|thumb:'16x16^' }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ settings.favicon|thumb:'32x32^' }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ settings.favicon|thumb:'192x192^' }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon|thumb:'180x180^' }}">
+  {% elif development_warning or debug_warning %}
+    <link rel="shortcut icon" href="{% static "pretixbase/img/favicon-debug.ico" %}">
+  {% else %}
+    <link rel="icon" href="{% static "pretixbase/img/favicon.ico" %}">
+    <link rel="shortcut icon" href="{% static "pretixbase/img/favicon.ico" %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static "pretixbase/img/icons/favicon-16x16.png" %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static "pretixbase/img/icons/favicon-32x32.png" %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static "pretixbase/img/icons/android-chrome-192x192.png" %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static "pretixbase/img/icons/apple-touch-icon.png" %}">
+  {% endif %}
+  <meta name="theme-color" content="{{ settings.primary_color|default:"#6366f1" }}">
+</head>
+
+{# data-* attributes required by Pretix JS #}
+<body class="nojs"
+      data-locale="{{ request.LANGUAGE_CODE }}"
+      data-now="{% now "U.u" %}"
+      data-datetimeformat="{{ js_datetime_format }}"
+      data-timeformat="{{ js_time_format }}"
+      data-dateformat="{{ js_date_format }}"
+      data-datetimelocale="{{ js_locale }}"
+      data-currency="{{ request.event.currency }}">
+
+{{ html_page_header|safe }}
+
+{# Skip-to-content (accessibility) #}
+<nav id="skip-to-main" role="navigation" aria-label="{% trans "Skip link" context "skip-to-main-nav" %}" class="sr-only on-focus-visible">
+  <p><a href="#content">{% trans "Skip to main content" %}</a></p>
+</nav>
+
+{# ══════════════════════════════════════════════════════════════════════
+   MODERN NAVBAR
+   ══════════════════════════════════════════════════════════════════════ #}
+<header class="mt-header" role="banner">
+  <div class="mt-header-inner">
+
+    {# Brand (logo / event name — overridden by event/base.html) #}
+    {% block navbar_brand %}
+    <span class="mt-brand">pretix</span>
+    {% endblock %}
+
+    <div class="mt-nav-spacer"></div>
+
+    {# Locale switcher + account links injected by event/base.html #}
+    {% block navbar_actions %}{% endblock %}
+
+    {# IE deprecation warning moved into banner below #}
+
+    {# Dark / light toggle #}
+    <button class="mt-theme-btn" id="mt-theme-toggle"
+            aria-label="{% trans "Toggle dark/light mode" %}"
+            aria-pressed="false">
+      {# Moon (shown in light mode) #}
+      <svg class="mt-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      {# Sun (shown in dark mode, hidden by default) #}
+      <svg class="mt-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+
+  </div>
+</header>
+
+{# ── IE deprecation banner ── #}
+{% if ie_deprecation_warning %}
+  <div class="offline-banner" role="alert">
+    <span class="fa fa-internet-explorer"></span>
+    {% blocktrans trimmed %}We've detected that you are using <strong>Microsoft Internet Explorer</strong>.{% endblocktrans %}
+    {% blocktrans trimmed %}Internet Explorer is no longer supported. Please use Edge, Firefox, Chrome or Safari.{% endblocktrans %}
+  </div>
+{% endif %}
+
+{# ── Above block: offline banners, locale bar (filled by event/base.html) ── #}
+{% block above %}{% endblock %}
+
+{# ══════════════════════════════════════════════════════════════════════
+   MAIN WRAPPER
+   ══════════════════════════════════════════════════════════════════════ #}
+<div class="mt-wrapper">
+  <main id="content">
+    {% block page %}{% endblock %}
+  </main>
+
+  <footer class="mt-footer">
+    {% block footer %}{% endblock %}
+    <nav aria-label="{% trans "Footer Navigation" %}">
+      <ul class="mt-footer-links">
+        {% block footernav %}{% endblock %}
+        {% if footer_text %}
+          <li>{{ footer_text }}</li>
+        {% endif %}
+        {% for f in footer %}
+          <li><a href="{% safelink f.url %}" target="_blank" rel="noopener">{{ f.label }}</a></li>
+        {% endfor %}
+        {% include "pretixpresale/base_footer.html" %} {# required by license #}
+      </ul>
+    </nav>
+  </footer>
+</div>
+
+{# ── Pretix modals (required for async tasks, lightbox, etc.) ── #}
+{% include "pretixpresale/fragment_modals.html" %}
+
+{# ── i18n catalogue ── #}
+{% if DEBUG %}
+  <script type="text/javascript" src="{% url 'javascript-catalog' lang=request.LANGUAGE_CODE %}"></script>
+{% else %}
+  <script src="{% statici18n request.LANGUAGE_CODE %}"></script>
+{% endif %}
+
+{# ── iFrame resizer (widget mode) ── #}
+{% if request.session.iframe_session %}
+  {% compress js file iframeresizer %}
+    <script type="text/javascript" src="{% static "iframeresizer/iframeResizer.contentWindow.js" %}"></script>
+  {% endcompress %}
+{% endif %}
+
+{# ── Modern theme JS ── #}
+<script src="{% static "pretix_modern_theme/modern.js" %}"></script>
+
+{{ html_foot|safe }}
+</body>
+</html>

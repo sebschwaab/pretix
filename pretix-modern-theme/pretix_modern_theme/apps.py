@@ -1,5 +1,10 @@
+import logging
+import os
+
 from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
+
+logger = logging.getLogger(__name__)
 
 
 class ModernThemeApp(AppConfig):
@@ -10,11 +15,38 @@ class ModernThemeApp(AppConfig):
         name = _('Modern Theme')
         author = 'Plombier Services'
         category = 'CUSTOMIZATION'
-        version = '1.0.0'
+        version = '2.0.0'
         description = _(
-            'Replaces the default Pretix presale interface with a modern, '
-            'responsive design using cards, smooth animations, and clean typography.'
+            'Modern SaaS-style theme for the Pretix presale interface with '
+            'dark mode, animated cards, responsive grid and full template override.'
         )
 
     def ready(self):
-        from . import signals  # noqa: F401
+        self._inject_template_dir()
+
+    def _inject_template_dir(self):
+        """
+        Insert our templates/ directory at the front of the Django filesystem
+        loader search paths so our templates take priority over pretix.presale
+        regardless of INSTALLED_APPS order (plugins are appended after core apps).
+
+        The filesystem loader calls engine.dirs on every render — modifying the
+        list after engine initialisation is safe and effective.
+        """
+        try:
+            from django.template import engines as django_engines
+
+            templates_dir = os.path.join(os.path.dirname(__file__), 'templates')
+
+            for engine in django_engines.all():
+                inner = getattr(engine, 'engine', None)
+                if inner is None:
+                    continue
+                dirs = getattr(inner, 'dirs', None)
+                if dirs is None:
+                    continue
+                if templates_dir not in dirs:
+                    dirs.insert(0, templates_dir)
+                    logger.debug('pretix-modern-theme: injected template dir %s', templates_dir)
+        except Exception:
+            logger.exception('pretix-modern-theme: failed to inject template directory')

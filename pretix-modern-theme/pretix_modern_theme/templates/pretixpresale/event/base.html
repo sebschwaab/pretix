@@ -1,0 +1,210 @@
+{% extends "pretixpresale/base.html" %}
+{% load urlreplace %}
+{% load i18n %}
+{% load static %}
+{% load thumb %}
+{% load eventurl %}
+{% load safelink %}
+{% load rich_text %}
+{% load anonymize_email %}
+
+{# ── Page title ────────────────────────────────────────────────────────── #}
+{% block thetitle %}
+  {% if messages %}{{ messages|join:" " }} :: {% endif %}
+  {% block title %}{% endblock %}{% if request.resolver_match.url_name != "event.index" %} :: {% endif %}{{ event.name }}
+{% endblock %}
+
+{# ── OG / SEO meta ─────────────────────────────────────────────────────── #}
+{% block custom_header %}
+  {% if event.settings.meta_noindex %}
+    <meta name="robots" content="noindex, nofollow">
+  {% elif "date" in request.GET or "old" in request.GET %}
+    <meta name="robots" content="noindex, follow">
+  {% endif %}
+  <meta property="og:type" content="website" />
+  {% if social_image %}
+    <meta property="og:image" content="{{ social_image }}" />
+  {% endif %}
+  {% if event.settings.google_site_verification %}
+    <meta name="google-site-verification" content="{{ event.settings.google_site_verification }}" />
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
+
+{# ── Navbar brand: event logo or name ─────────────────────────────────── #}
+{% block navbar_brand %}
+<a href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}"
+   class="mt-brand" title="{% trans "Homepage" %}">
+  {% if event_logo %}
+    <img src="{{ event_logo|thumb:'5000x36' }}" alt="{{ event.name }}" class="mt-brand-logo">
+  {% else %}
+    {{ event.name }}
+  {% endif %}
+</a>
+{% endblock %}
+
+{# ── Navbar actions: locales + account ────────────────────────────────── #}
+{% block navbar_actions %}
+  {% if event.settings.locales|length > 1 %}
+    <nav class="mt-nav-locales" aria-label="{% trans "select language" %}">
+      {% for l in languages %}
+        <a href="{% url "presale:locale.set" %}?locale={{ l.code }}&next={{ request.path }}{% if request.META.QUERY_STRING %}%3F{% url_replace request "locale" "" %}{% endif %}"
+           class="{% if l.code == request.LANGUAGE_CODE %}active{% endif %}"
+           rel="nofollow" lang="{{ l.code }}" hreflang="{{ l.code }}"
+           aria-label="{% language l.code %}{% blocktrans trimmed with language=l.name_local %}Website in {{ language }}{% endblocktrans %}{% endlanguage %}">
+          {{ l.name_local }}
+        </a>
+      {% endfor %}
+    </nav>
+  {% endif %}
+  {% if request.organizer.settings.customer_accounts %}
+    <div class="mt-nav-account">
+      {% include "pretixpresale/fragment_login_status.html" %}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{# ── Above block: offline banner + organizer link ─────────────────────── #}
+{% block above %}
+  {% if not event.live %}
+    <div class="offline-banner" role="alert">
+      <span class="fa fa-user-secret" aria-hidden="true"></span>
+      {% trans "This shop is currently only visible to you and your team." %}
+      <a href="{{ site_url }}{% url "control:event.live" event=event.slug organizer=event.organizer.slug %}">
+        {% trans "Take it live now" %}
+      </a>
+    </div>
+  {% endif %}
+  {% if request.event.settings.organizer_link_back %}
+    <div class="mt-above">
+      <div class="page-header-links">
+        <a href="{% abseventurl request.organizer "presale:organizer.index" %}">
+          &laquo; {% blocktrans trimmed with name=request.organizer.name %}Show all events of {{ name }}{% endblocktrans %}
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{# ── Page block: hero + content ────────────────────────────────────────── #}
+{% block page %}
+
+  {# ── HERO SECTION ─────────────────────────────────────────────────── #}
+  {% if event_logo and event_logo_image_large %}
+    <div class="mt-hero mt-hero-logo-large">
+      <a href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}" title="{% trans "Homepage" %}">
+        <img src="{{ event_logo|thumb:'1170x5000' }}" alt="{{ event.name }}" class="mt-hero-logo-full">
+      </a>
+    </div>
+  {% else %}
+    <div class="mt-hero" role="banner">
+      <div class="mt-hero-inner">
+        {% if event_logo %}
+          <a href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}" title="{% trans "Homepage" %}">
+            <img src="{{ event_logo|thumb:'5000x80' }}" alt="{{ event.name }}" class="mt-hero-logo">
+          </a>
+        {% else %}
+          <h1 class="mt-hero-title sr-only-if-logo">
+            <a href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}" style="color:inherit;text-decoration:none">
+              {{ event.name }}
+            </a>
+          </h1>
+        {% endif %}
+        {% if not event.has_subevents and event.settings.show_dates_on_frontpage %}
+          <p class="mt-hero-subtitle">{{ event.get_date_range_display_as_html }}</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# ── Testmode warning ──────────────────────────────────────────────── #}
+  {% if request.event.testmode %}
+    {% if request.sales_channel.type_instance.testmode_supported %}
+      <div class="alert alert-warning" role="alert" style="margin:16px 24px 0;border-radius:0">
+        <p><strong><span class="sr-only">{% trans "Warning" context "alert-messages" %}:</span>
+          {% trans "This ticket shop is currently in test mode." %}</strong></p>
+        <p>{% trans "Please do not perform any real purchases as your order might be deleted without notice." %}</p>
+        {% if request.now_dt_is_fake %}
+          <p>{% blocktrans trimmed with datetime=request.now_dt|date:"SHORT_DATETIME_FORMAT" %}You are currently using the time machine. The ticket shop is rendered as if it were {{ datetime }}.{% endblocktrans %}
+          <a href="{% eventurl event "presale:event.timemachine" %}"><span class="fa fa-clock-o" aria-hidden="true"></span>{% trans "Change" %}</a></p>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="alert alert-danger" role="alert" style="margin:16px 24px 0;border-radius:0">
+        <p><strong><span class="sr-only">{% trans "Warning" context "alert-messages" %}:</span>
+          {% trans "Orders made through this sales channel cannot be deleted - even if the ticket shop is in test mode!" %}</strong></p>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {# ── Flash messages ────────────────────────────────────────────────── #}
+  {% if messages %}
+    <div style="padding:16px 24px 0;max-width:1200px;margin:0 auto">
+      {% for message in messages %}
+        <div class="alert {{ message.tags }}"{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} id="error-message"{% endif %} role="alert">
+          <p>
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}<span class="sr-only">{% trans "Error" context "alert-messages" %}:</span>{% endif %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}<span class="sr-only">{% trans "Warning" context "alert-messages" %}:</span>{% endif %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}<span class="sr-only">{% trans "Information" context "alert-messages" %}:</span>{% endif %}
+            {{ message }}
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# ── Site banner top ───────────────────────────────────────────────── #}
+  {% if request.event.settings.banner_text %}
+    <div class="mt-wrapper" style="padding-bottom:0">
+      <div class="site-notice-top">{{ request.event.settings.banner_text|rich_text }}</div>
+    </div>
+  {% endif %}
+
+  {# ── Content block ─────────────────────────────────────────────────── #}
+  {% block content %}{% endblock %}
+
+{% endblock %}
+
+{# ── Footer block: testmode repeat + site notice bottom ───────────────── #}
+{% block footer %}
+  {% if request.event.settings.banner_text_bottom %}
+    <div class="site-notice-bottom">{{ request.event.settings.banner_text_bottom|rich_text }}</div>
+  {% endif %}
+  {% if request.event.testmode %}
+    {% if request.sales_channel.type_instance.testmode_supported %}
+      <div class="alert alert-testmode alert-warning">
+        <p><strong><span class="sr-only">{% trans "Warning" context "alert-messages" %}:</span>
+          {% trans "This ticket shop is currently in test mode." %}</strong></p>
+        <p>{% trans "Please do not perform any real purchases as your order might be deleted without notice." %}</p>
+      </div>
+    {% else %}
+      <div class="alert alert-testmode alert-danger">
+        <p><strong><span class="sr-only">{% trans "Warning" context "alert-messages" %}:</span>
+          {% trans "Orders made through this sales channel cannot be deleted - even if the ticket shop is in test mode!" %}</strong></p>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+{# ── Footer nav ────────────────────────────────────────────────────────── #}
+{% block footernav %}
+  {% if request.event.settings.contact_mail %}
+    <li><a href="{{ 'mailto:'|add:request.event.settings.contact_mail|anon_email }}" target="_blank" rel="noopener">{% trans "Contact" %}</a></li>
+  {% endif %}
+  {% if request.event.settings.privacy_url %}
+    <li><a href="{% safelink request.event.settings.privacy_url %}" target="_blank" rel="noopener">{% trans "Privacy policy" %}</a></li>
+  {% endif %}
+  {% if request.event.settings.accessibility_url %}
+    {% trans "Accessibility information" as accessibility_title %}
+    <li><a href="{% safelink request.event.settings.accessibility_url %}" target="_blank" rel="noopener">{{ request.event.settings.accessibility_title|default:accessibility_title }}</a></li>
+  {% elif request.event.settings.accessibility_text %}
+    {% trans "Accessibility information" as accessibility_title %}
+    <li><a href="{% abseventurl request.organizer "presale:organizer.accessibility" %}" target="_blank" rel="noopener">{{ request.event.settings.accessibility_title|default:accessibility_title }}</a></li>
+  {% endif %}
+  {% if request.event.settings.cookie_consent and cookie_providers %}
+    <li><button type="button" class="btn btn-link" id="cookie-consent-reopen">{% trans "Cookie settings" %}</button></li>
+  {% endif %}
+  {% if request.event.settings.imprint_url %}
+    <li><a href="{% safelink request.event.settings.imprint_url %}" target="_blank" rel="noopener">{% trans "Imprint" %}</a></li>
+  {% endif %}
+{% endblock %}
