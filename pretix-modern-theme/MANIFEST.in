@@ -1,0 +1,2 @@
+recursive-include pretix_modern_theme/static *
+recursive-include pretix_modern_theme/templates *

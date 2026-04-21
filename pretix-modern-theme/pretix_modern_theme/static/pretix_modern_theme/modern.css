@@ -1,0 +1,433 @@
+/* pretix-modern-theme — CSS overrides
+ * Relies on CSS custom properties set by Pretix's own theme engine.
+ * All colours come from --pretix-brand-* / --pretix-link-* variables. */
+
+/* ── Global reset & typography ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  background: #f5f6fa;
+  color: #2d3748;
+}
+
+a {
+  color: var(--pretix-brand-primary, #3b1c4a);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+a:hover { text-decoration: underline; opacity: 0.85; }
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1a202c;
+}
+
+/* ── Layout container ───────────────────────────────────────────────────── */
+.main-box {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+header { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); margin-bottom: 0; }
+
+.event-header {
+  background: #fff;
+  border-bottom: 1px solid #e8ecf0;
+  padding: 20px 0 16px;
+  margin-bottom: 32px;
+}
+
+.event-header .event-logo img {
+  max-height: 64px;
+  width: auto;
+}
+
+.event-header h1 {
+  font-size: 1.6rem;
+  margin: 0 0 4px;
+}
+
+/* ── Cards (replaces Bootstrap panels) ─────────────────────────────────── */
+.panel {
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07) !important;
+  margin-bottom: 24px;
+  background: #fff;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+.panel:hover { box-shadow: 0 4px 20px rgba(0,0,0,.11) !important; }
+
+.panel-heading {
+  background: transparent !important;
+  border-bottom: 1px solid #f0f2f5 !important;
+  padding: 18px 24px 14px !important;
+}
+
+.panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a202c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.panel-body {
+  padding: 20px 24px !important;
+}
+
+.panel-primary > .panel-heading {
+  background: var(--pretix-brand-primary, #3b1c4a) !important;
+  border-color: transparent !important;
+}
+.panel-primary > .panel-heading .panel-title,
+.panel-primary > .panel-heading h3 {
+  color: #fff !important;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.btn {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 9px 20px !important;
+  font-size: 0.95rem !important;
+  border: none !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none !important;
+}
+
+.btn-primary {
+  background: var(--pretix-brand-primary, #3b1c4a) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15) !important;
+}
+.btn-primary:hover {
+  background: var(--pretix-brand-primary-darken-10, #2e1639) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.20) !important;
+  transform: translateY(-1px);
+}
+
+.btn-default {
+  background: #fff !important;
+  color: var(--pretix-brand-primary, #3b1c4a) !important;
+  border: 1.5px solid #dde1e9 !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06) !important;
+}
+.btn-default:hover {
+  background: #f8f9ff !important;
+  border-color: var(--pretix-brand-primary, #3b1c4a) !important;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: #e53e3e !important;
+  color: #fff !important;
+}
+.btn-danger:hover { background: #c53030 !important; transform: translateY(-1px); }
+
+.btn-lg { padding: 12px 28px !important; font-size: 1.05rem !important; }
+.btn-sm { padding: 5px 12px !important; font-size: 0.85rem !important; }
+.btn-block { width: 100%; justify-content: center; }
+
+.btn .fa { font-size: 0.9em; }
+
+/* ── Forms ───────────────────────────────────────────────────────────────── */
+.form-control {
+  border: 1.5px solid #dde1e9 !important;
+  border-radius: 8px !important;
+  padding: 10px 14px !important;
+  font-size: 0.95rem !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  background: #fff !important;
+  height: auto !important;
+}
+.form-control:focus {
+  border-color: var(--pretix-brand-primary, #3b1c4a) !important;
+  box-shadow: 0 0 0 3px rgba(59,28,74,.12) !important;
+  outline: none !important;
+}
+
+label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #4a5568;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-group { margin-bottom: 20px; }
+
+select.form-control {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  padding-right: 36px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Checkbox / Radio modernisation */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--pretix-brand-primary, #3b1c4a);
+  cursor: pointer;
+}
+
+/* ── Alerts ──────────────────────────────────────────────────────────────── */
+.alert {
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 14px 18px !important;
+  font-size: 0.95rem;
+}
+.alert-info    { background: #ebf8ff !important; color: #2b6cb0 !important; }
+.alert-success { background: #f0fff4 !important; color: #276749 !important; }
+.alert-warning { background: #fffbeb !important; color: #92400e !important; }
+.alert-danger  { background: #fff5f5 !important; color: #c53030 !important; }
+
+/* ── Product list (shop index) ──────────────────────────────────────────── */
+.product-row {
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f2f5;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.product-row:last-child { border-bottom: none; }
+
+.product-row-name { font-weight: 700; font-size: 1rem; }
+.product-row-description { color: #718096; font-size: 0.9rem; margin-top: 4px; }
+
+/* Variation rows */
+.variation-row {
+  padding: 10px 0 10px 24px;
+  border-bottom: 1px solid #f7f8fa;
+}
+
+/* ── Cart ────────────────────────────────────────────────────────────────── */
+.cart .panel-heading { background: #f8f9fb !important; }
+
+.cart-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f2f5;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cart-row:last-child { border-bottom: none; }
+
+.cart-row .price {
+  font-weight: 700;
+  color: var(--pretix-brand-primary, #3b1c4a);
+  white-space: nowrap;
+}
+
+.cart-row.total {
+  border-top: 2px solid #e8ecf0 !important;
+  border-bottom: none;
+  padding-top: 14px;
+  font-size: 1.05rem;
+}
+
+/* ── Checkout steps indicator ────────────────────────────────────────────── */
+.checkout-flow, .checkout-steps {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+.checkout-flow li, .checkout-steps .step {
+  flex: 1;
+  list-style: none;
+  padding: 12px 16px;
+  background: #fff;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #a0aec0;
+  border-right: 1px solid #f0f2f5;
+  position: relative;
+}
+
+.checkout-flow li:last-child, .checkout-steps .step:last-child { border-right: none; }
+
+.checkout-flow li.active, .checkout-steps .step.active {
+  background: var(--pretix-brand-primary, #3b1c4a);
+  color: #fff;
+}
+
+.checkout-flow li.done, .checkout-steps .step.done {
+  background: var(--pretix-brand-success-tint-85, #f0fff4);
+  color: var(--pretix-brand-success, #38a169);
+}
+
+/* ── Thank you page ──────────────────────────────────────────────────────── */
+.thank-you {
+  text-align: center;
+  padding: 40px 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  margin-bottom: 32px;
+}
+.thank-you .fa-check-circle {
+  font-size: 56px;
+  color: var(--pretix-brand-success, #38a169);
+  display: block;
+  margin-bottom: 16px;
+}
+.thank-you h2 { font-size: 2rem; margin-bottom: 12px; }
+.thank-you .lead { color: #4a5568; }
+
+/* ── Status labels ───────────────────────────────────────────────────────── */
+.label {
+  border-radius: 6px !important;
+  padding: 3px 10px !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.label-success { background: var(--pretix-brand-success, #38a169) !important; }
+.label-warning { background: #dd6b20 !important; }
+.label-danger  { background: #e53e3e !important; }
+.label-info    { background: #3182ce !important; }
+
+/* ── Sneak-peek cart (checkout) ──────────────────────────────────────────── */
+.sneak-peek-container summary {
+  list-style: none;
+  cursor: pointer;
+}
+.sneak-peek-container summary::-webkit-details-marker { display: none; }
+
+/* ── List groups ──────────────────────────────────────────────────────────── */
+.list-group { border-radius: 0 !important; }
+.list-group-item {
+  border-color: #f0f2f5 !important;
+  padding: 16px 20px !important;
+}
+.list-group-item:first-child { border-top: none !important; }
+.list-group-item:last-child  { border-bottom: none !important; }
+
+/* ── dl horizontal ───────────────────────────────────────────────────────── */
+.dl-horizontal dt { font-weight: 600; color: #718096; font-size: 0.88rem; }
+.dl-horizontal dd { color: #2d3748; margin-bottom: 8px; }
+
+/* ── Navigation (locale / login bar) ────────────────────────────────────── */
+.navbar { box-shadow: none; border: none; border-bottom: 1px solid #e8ecf0; }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #e8ecf0;
+  color: #a0aec0;
+  font-size: 0.85rem;
+}
+footer nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+footer nav a { color: #718096; }
+footer nav a:hover { color: var(--pretix-brand-primary, #3b1c4a); }
+
+/* ── Subevent list / calendar ────────────────────────────────────────────── */
+.subevent-list-table { width: 100%; border-collapse: collapse; }
+.subevent-list-table tr { border-bottom: 1px solid #f0f2f5; }
+.subevent-list-table td, .subevent-list-table th { padding: 12px 8px; }
+.subevent-list-table th { font-weight: 700; font-size: 0.88rem; color: #718096; text-transform: uppercase; letter-spacing: .03em; }
+
+/* ── Frontpage text ──────────────────────────────────────────────────────── */
+.frontpage-text {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  line-height: 1.7;
+}
+
+/* ── Voucher form ────────────────────────────────────────────────────────── */
+.voucher-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 28px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .main-box { padding: 0 12px 48px; }
+
+  .panel-body { padding: 16px !important; }
+  .panel-heading { padding: 14px 16px 12px !important; }
+
+  .btn-lg { padding: 11px 20px !important; }
+
+  .thank-you { padding: 28px 16px; }
+  .thank-you .fa-check-circle { font-size: 44px; }
+  .thank-you h2 { font-size: 1.5rem; }
+
+  .checkout-flow, .checkout-steps { flex-direction: column; }
+  .checkout-flow li, .checkout-steps .step { border-right: none; border-bottom: 1px solid #f0f2f5; }
+
+  .dl-horizontal dt, .dl-horizontal dd { float: none; width: 100%; }
+}
+
+/* ── Smooth page entry ───────────────────────────────────────────────────── */
+@keyframes mt-fadein {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.main-box main > * { animation: mt-fadein 0.3s ease both; }
+
+/* ── Accessibility: focus ring ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 3px solid var(--pretix-brand-primary, #3b1c4a);
+  outline-offset: 2px;
+}
+
+/* ── Input group ─────────────────────────────────────────────────────────── */
+.input-group .input-group-btn .btn { border-radius: 0 8px 8px 0 !important; }
+.input-group .form-control:first-child { border-radius: 8px 0 0 8px !important; }
+
+/* ── Test mode banner ────────────────────────────────────────────────────── */
+.testmode-badge, .alert-testmode {
+  background: repeating-linear-gradient(
+    45deg,
+    #f6ad55,
+    #f6ad55 10px,
+    #fff3cd 10px,
+    #fff3cd 20px
+  );
+  color: #7b341e;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+/* ── Quota / availability pills ──────────────────────────────────────────── */
+.availability-box .text-success { color: var(--pretix-brand-success, #38a169) !important; font-weight: 600; }
+.availability-box .text-danger  { color: #e53e3e !important; font-weight: 600; }
