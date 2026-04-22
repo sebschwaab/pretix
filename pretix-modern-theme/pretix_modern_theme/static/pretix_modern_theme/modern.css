@@ -232,7 +232,24 @@ code {
   position: relative;
 }
 
-.mt-hero-logo { max-height: 80px; width: auto; margin-bottom: 24px; border-radius: var(--r-sm); }
+/* Logo link wrapper — sits outside the 760px inner so it spans the full hero */
+.mt-hero-logo-link {
+  display: block;
+  text-align: center;
+  padding: 32px 24px 0;
+}
+
+/* Logo: fills available width, maintains ratio, centers if narrower than container */
+.mt-hero-logo {
+  display: block;
+  margin: 0 auto 24px;
+  width: 100%;
+  max-width: 960px;
+  height: auto;
+  max-height: 260px;
+  object-fit: contain;
+  border-radius: var(--r-sm);
+}
 
 .mt-hero-title {
   font-size: clamp(1.6rem, 4vw, 2.6rem);
@@ -706,13 +723,16 @@ input[type="checkbox"], input[type="radio"] {
 .alert {
   border: none !important;
   border-radius: var(--r-sm) !important;
-  padding: 13px 18px 13px 14px !important;
+  padding: 14px 18px !important;
   font-size: .93rem;
-  display: flex; align-items: flex-start; gap: 10px;
   margin-bottom: 18px;
+  display: block;
 }
-.alert > p { margin: 0; flex: 1; }
+.alert p,
+.alert > p { margin: 0; }
+.alert p + p,
 .alert > p + p { margin-top: 6px; }
+.alert strong { display: block; margin-bottom: 2px; }
 .alert .sr-only { position: absolute; }
 
 .alert-info    { background: #dbeafe !important; color: #1e40af !important; }
