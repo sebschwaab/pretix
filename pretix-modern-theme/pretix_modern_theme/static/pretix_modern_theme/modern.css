@@ -372,8 +372,13 @@ article.item-with-variations {
   box-shadow: var(--sh-sm);
   margin-bottom: 16px;
   padding: 24px;
-  overflow: hidden;
+  overflow: visible;
   transition: box-shadow 200ms var(--ease), transform 200ms var(--ease), border-color 200ms var(--ease);
+}
+/* Clearfix for Bootstrap floats inside cards (replaces overflow:hidden) */
+article.product-row.simple::after,
+article.item-with-variations::after {
+  content: ''; display: table; clear: both;
 }
 article.product-row.simple:hover,
 article.item-with-variations:hover {
@@ -382,37 +387,26 @@ article.item-with-variations:hover {
   border-color: var(--primary);
 }
 
-/* Product card inner: Bootstrap float grid (col-md-8 name, col-md-2 price, col-md-2 qty) */
-article.product-row.simple.row {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  overflow: hidden;
-}
-article.product-row.simple.row > [class*="col-"] {
+/* Product card columns — apply to BOTH .row and .row-fluid articles */
+article.product-row [class*="col-"] {
   padding-left: 8px !important;
   padding-right: 8px !important;
 }
-article.product-row.simple.row > [class*="col-"]:first-child { padding-left: 0 !important; }
-article.product-row.simple.row > [class*="col-"]:last-child  { padding-right: 0 !important; }
-article.product-row.simple.row > .price        { text-align: right; }
-article.product-row.simple.row > .availability-box { text-align: right; }
+article.product-row [class*="col-"]:first-child { padding-left: 0 !important; }
+article.product-row [class*="col-"]:last-child  { padding-right: 0 !important; }
 
-/* Variation rows inside expanded items */
+/* Float containment for .row articles (row-fluid contains itself) */
+article.product-row.simple.row,
 article.item-with-variations .product-row.headline.row,
 article.product-row.variation.row {
   margin-left: 0 !important;
   margin-right: 0 !important;
   overflow: hidden;
 }
-article.item-with-variations .product-row.headline.row > [class*="col-"],
-article.product-row.variation.row > [class*="col-"] {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-article.item-with-variations .product-row.headline.row > [class*="col-"]:first-child,
-article.product-row.variation.row > [class*="col-"]:first-child { padding-left: 0 !important; }
-article.item-with-variations .product-row.headline.row > [class*="col-"]:last-child,
-article.product-row.variation.row > [class*="col-"]:last-child  { padding-right: 0 !important; }
+
+/* Price and availability alignment */
+article.product-row .price        { text-align: right; }
+article.product-row .availability-box { text-align: right; }
 article.product-row.variation.row > .price        { text-align: right; }
 article.product-row.variation.row > .availability-box { text-align: right; }
 
@@ -474,13 +468,19 @@ article.product-row.variation:last-child { border-bottom: none; }
   display: inline-flex !important;
   align-items: stretch;
   background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--r-sm);
+  border: 2px solid var(--border) !important;
+  border-radius: var(--r-sm) !important;
   overflow: hidden;
   box-shadow: var(--sh-sm);
   transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
-  padding: 0;
-  margin: 0;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+  width: auto !important;
+  /* reset fieldset browser defaults */
+  appearance: none;
+  -webkit-appearance: none;
+  float: right;
 }
 .input-item-count-group.mt-has-value {
   border-color: var(--primary);
@@ -489,9 +489,9 @@ article.product-row.variation:last-child { border-bottom: none; }
 
 .input-item-count-dec,
 .input-item-count-inc {
-  flex: 0 0 40px;
-  width: 40px !important;
-  height: 44px !important;
+  flex: 0 0 32px;
+  width: 32px !important;
+  height: 40px !important;
   padding: 0 !important;
   font-size: 1.3rem !important;
   font-weight: 700 !important;
@@ -520,10 +520,10 @@ article.product-row.variation:last-child { border-bottom: none; }
 .input-item-count,
 .input-item-count-group input[type="number"],
 .input-item-count-group input {
-  flex: 0 0 2.5rem;
-  width: 2.5rem !important;
-  min-width: 2.5rem !important;
-  height: 44px !important;
+  flex: 0 0 2rem;
+  width: 2rem !important;
+  min-width: 2rem !important;
+  height: 40px !important;
   border: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
@@ -817,9 +817,10 @@ input[type="checkbox"], input[type="radio"] {
 
 .checkout-flow .checkout-step {
   flex: 1;
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 18px;
-  font-size: .84rem; font-weight: 600;
+  min-width: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 10px;
+  font-size: .78rem; font-weight: 600;
   color: var(--text-3);
   border-right: 1px solid var(--border);
   transition: background 200ms var(--ease);
@@ -828,12 +829,19 @@ input[type="checkbox"], input[type="radio"] {
 .checkout-flow .checkout-step a { display: contents; text-decoration: none; color: inherit; }
 
 .checkout-step-icon {
-  width: 30px; height: 30px;
+  width: 26px; height: 26px;
   border-radius: 50%;
   background: var(--surface-2);
   display: flex; align-items: center; justify-content: center;
-  font-size: .8rem; flex-shrink: 0;
+  font-size: .75rem; flex-shrink: 0;
   transition: background 200ms var(--ease), color 200ms var(--ease);
+}
+
+.checkout-step-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .checkout-step.step-done { color: var(--success); }
