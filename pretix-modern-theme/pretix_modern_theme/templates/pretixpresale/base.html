@@ -12,7 +12,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="origin">
 
-  {# ── Pretix core CSS (Bootstrap 3 + pretix styles) ── #}
   {% compress css file presale %}
     <link rel="stylesheet" type="text/x-scss" href="{% static "pretixpresale/scss/main.scss" %}"/>
   {% endcompress %}
@@ -20,10 +19,9 @@
     <link rel="stylesheet" type="text/css" href="{{ css_theme }}" />
   {% endif %}
 
-  {# ── Modern theme CSS (overrides) ── #}
   <link rel="stylesheet" href="{% static "pretix_modern_theme/modern.css" %}">
 
-  {# ── Dark mode init — runs before first paint to avoid flash ── #}
+  <!-- dark-mode init: runs before first paint to prevent FOUC -->
   <script>
   (function(){
     var k='mt-theme';
@@ -32,15 +30,12 @@
   }());
   </script>
 
-  {# ── Pretix JS bundle ── #}
   {% include "pretixpresale/fragment_js.html" %}
 
-  {# ── Plugin html_head injections (other plugins) ── #}
   {{ html_head|safe }}
 
   {% block custom_header %}{% endblock %}
 
-  {# ── Favicons ── #}
   {% if settings.favicon %}
     <link rel="icon" href="{{ settings.favicon|thumb:'16x16^' }}">
     <link rel="shortcut icon" href="{{ settings.favicon|thumb:'16x16^' }}">
@@ -61,7 +56,6 @@
   <meta name="theme-color" content="{{ settings.primary_color|default:"#6366f1" }}">
 </head>
 
-{# data-* attributes required by Pretix JS #}
 <body class="nojs"
       data-locale="{{ request.LANGUAGE_CODE }}"
       data-now="{% now "U.u" %}"
@@ -73,38 +67,27 @@
 
 {{ html_page_header|safe }}
 
-{# Skip-to-content (accessibility) #}
 <nav id="skip-to-main" role="navigation" aria-label="{% trans "Skip link" context "skip-to-main-nav" %}" class="sr-only on-focus-visible">
   <p><a href="#content">{% trans "Skip to main content" %}</a></p>
 </nav>
 
-{# ══════════════════════════════════════════════════════════════════════
-   MODERN NAVBAR
-   ══════════════════════════════════════════════════════════════════════ #}
 <header class="mt-header" role="banner">
   <div class="mt-header-inner">
 
-    {# Brand (logo / event name — overridden by event/base.html) #}
     {% block navbar_brand %}
     <span class="mt-brand">pretix</span>
     {% endblock %}
 
     <div class="mt-nav-spacer"></div>
 
-    {# Locale switcher + account links injected by event/base.html #}
     {% block navbar_actions %}{% endblock %}
 
-    {# IE deprecation warning moved into banner below #}
-
-    {# Dark / light toggle #}
     <button class="mt-theme-btn" id="mt-theme-toggle"
             aria-label="{% trans "Toggle dark/light mode" %}"
             aria-pressed="false">
-      {# Moon (shown in light mode) #}
       <svg class="mt-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
-      {# Sun (shown in dark mode, hidden by default) #}
       <svg class="mt-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
         <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
         <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
@@ -116,7 +99,6 @@
   </div>
 </header>
 
-{# ── IE deprecation banner ── #}
 {% if ie_deprecation_warning %}
   <div class="offline-banner" role="alert">
     <span class="fa fa-internet-explorer"></span>
@@ -125,12 +107,8 @@
   </div>
 {% endif %}
 
-{# ── Above block: offline banners, locale bar (filled by event/base.html) ── #}
 {% block above %}{% endblock %}
 
-{# ══════════════════════════════════════════════════════════════════════
-   MAIN WRAPPER
-   ══════════════════════════════════════════════════════════════════════ #}
 <div class="mt-wrapper">
   <main id="content">
     {% block page %}{% endblock %}
@@ -147,30 +125,26 @@
         {% for f in footer %}
           <li><a href="{% safelink f.url %}" target="_blank" rel="noopener">{{ f.label }}</a></li>
         {% endfor %}
-        {% include "pretixpresale/base_footer.html" %} {# required by license #}
+        {% include "pretixpresale/base_footer.html" %}
       </ul>
     </nav>
   </footer>
 </div>
 
-{# ── Pretix modals (required for async tasks, lightbox, etc.) ── #}
 {% include "pretixpresale/fragment_modals.html" %}
 
-{# ── i18n catalogue ── #}
 {% if DEBUG %}
   <script type="text/javascript" src="{% url 'javascript-catalog' lang=request.LANGUAGE_CODE %}"></script>
 {% else %}
   <script src="{% statici18n request.LANGUAGE_CODE %}"></script>
 {% endif %}
 
-{# ── iFrame resizer (widget mode) ── #}
 {% if request.session.iframe_session %}
   {% compress js file iframeresizer %}
     <script type="text/javascript" src="{% static "iframeresizer/iframeResizer.contentWindow.js" %}"></script>
   {% endcompress %}
 {% endif %}
 
-{# ── Modern theme JS ── #}
 <script src="{% static "pretix_modern_theme/modern.js" %}"></script>
 
 {{ html_foot|safe }}
