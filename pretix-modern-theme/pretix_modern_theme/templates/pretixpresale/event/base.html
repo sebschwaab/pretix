@@ -34,13 +34,7 @@
 {# ── Navbar brand: event logo or name ─────────────────────────────────── #}
 {% block navbar_brand %}
 <a href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}"
-   class="mt-brand" title="{% trans "Homepage" %}">
-  {% if event_logo %}
-    <img src="{{ event_logo|thumb:'5000x36' }}" alt="{{ event.name }}" class="mt-brand-logo">
-  {% else %}
-    {{ event.name }}
-  {% endif %}
-</a>
+   class="mt-brand" title="{% trans "Homepage" %}">{{ event.name }}</a>
 {% endblock %}
 
 {# ── Navbar actions: locales + account ────────────────────────────────── #}
@@ -89,29 +83,24 @@
 {# ── Page block: hero + content ────────────────────────────────────────── #}
 {% block page %}
 
-  {# ── HERO SECTION ─────────────────────────────────────────────────── #}
-  {% if event_logo and event_logo_image_large %}
-    <div class="mt-hero mt-hero-logo-large">
-      <a href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}" title="{% trans "Homepage" %}">
-        <img src="{{ event_logo|thumb:'1170x5000' }}" alt="{{ event.name }}" class="mt-hero-logo-full">
+  <!-- HERO: logo-only (white) when a logo exists; gradient with name when no logo -->
+  {% if event_logo %}
+    <div class="mt-hero-image" role="banner">
+      <a class="mt-hero-logo-link" href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}" title="{% trans "Homepage" %}">
+        <img src="{{ event_logo|thumb:'1200x400' }}" alt="{{ event.name }}" class="mt-hero-logo">
       </a>
+      {% if not event.has_subevents and event.settings.show_dates_on_frontpage %}
+        <p class="mt-hero-image-date">{{ event.get_date_range_display_as_html }}</p>
+      {% endif %}
     </div>
   {% else %}
     <div class="mt-hero" role="banner">
-      {% if event_logo %}
-        <!-- Logo outside the width-constrained inner so it can go full-width -->
-        <a class="mt-hero-logo-link" href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}" title="{% trans "Homepage" %}">
-          <img src="{{ event_logo|thumb:'1200x400' }}" alt="{{ event.name }}" class="mt-hero-logo">
-        </a>
-      {% endif %}
       <div class="mt-hero-inner">
-        {% if not event_logo %}
-          <h1 class="mt-hero-title">
-            <a href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}" style="color:inherit;text-decoration:none">
-              {{ event.name }}
-            </a>
-          </h1>
-        {% endif %}
+        <h1 class="mt-hero-title">
+          <a href="{% eventurl event "presale:event.index" cart_namespace=cart_namespace|default_if_none:"" %}" style="color:inherit;text-decoration:none">
+            {{ event.name }}
+          </a>
+        </h1>
         {% if not event.has_subevents and event.settings.show_dates_on_frontpage %}
           <p class="mt-hero-subtitle">{{ event.get_date_range_display_as_html }}</p>
         {% endif %}
