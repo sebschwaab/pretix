@@ -405,7 +405,7 @@ article.product-row.variation.row {
 }
 
 /* Price and availability alignment */
-article.product-row .price        { text-align: right; padding-right: 20px !important; }
+article.product-row .price        { text-align: right; padding-right: 30px !important; }
 article.product-row .availability-box { text-align: right; padding-left: 4px !important; }
 article.product-row.variation.row > .price        { text-align: right; }
 article.product-row.variation.row > .availability-box { text-align: right; }
@@ -781,16 +781,37 @@ input[type="checkbox"], input[type="radio"] {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 4px 12px;
+  gap: 4px 8px;
   padding: 10px 0;
   border-bottom: 1px solid var(--border);
 }
 .cart-row:last-child { border-bottom: none; }
 /* Item name takes all available space */
 .cart-row > :first-child { flex: 1 1 120px; min-width: 0; }
-/* Price column right-aligned */
-.cart-row .price { font-weight: 800; color: var(--primary); white-space: nowrap; margin-left: auto; }
-/* Unit price shown smaller when qty > 1 */
+/* Quantity: "4 ×" */
+.cart-row .count {
+  color: var(--text-3);
+  font-size: .82rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.cart-row .count::after { content: '\00a0×'; }
+/* Unit price: secondary/muted */
+.cart-row .singleprice.price {
+  font-weight: 400 !important;
+  color: var(--text-2) !important;
+  font-size: .82rem !important;
+  white-space: nowrap;
+}
+/* Total price: primary/bold — the "real" price */
+.cart-row .totalprice.price {
+  font-weight: 700 !important;
+  color: var(--primary) !important;
+  font-size: .95rem !important;
+  white-space: nowrap;
+  margin-left: auto;
+}
+/* Subtotal/total rows */
 .cart-row .price small,
 .cart-row small.price { font-size: .82rem; color: var(--text-2); font-weight: 500; }
 .cart-row.total { border-top: 2px solid var(--border) !important; border-bottom: none; padding-top: 14px; font-size: 1.05rem; }
