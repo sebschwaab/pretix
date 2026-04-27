@@ -1275,33 +1275,35 @@ input[type="file"]:hover::file-selector-button {
 #stripe-card.is-focused { border-color: var(--primary) !important; }
 #stripe-card.has-error  { border-color: #dc2626 !important; }
 
-/* Layout: card fields | OR | GPay — all on one row */
+/* Vertical stack: GPay (optional) → OR divider → card fields */
 #stripe-card-elements {
   display: flex !important;
-  align-items: center;
-  gap: 0;
-  flex-wrap: nowrap;
+  flex-direction: column;
+  gap: 14px;
 }
-#stripe-card-elements > [class*="col-"] {
+/* GPay button: full width */
+#stripe-card-elements .stripe-payment-request-button-container {
+  width: 100% !important;
   float: none !important;
-  width: auto !important;
-  padding: 0 8px;
 }
-#stripe-card-elements .stripe-card-holder { flex: 1 1 auto; padding-left: 0; }
-#stripe-card-elements .stripe-or { flex: 0 0 auto; }
-#stripe-card-elements .stripe-payment-request-button-container { flex: 0 1 180px; padding-right: 0; }
+#stripe-payment-request-button { width: 100%; }
 
-/* "OR" / "OU" pill separator */
-.stripe-or { display: flex !important; justify-content: center; }
-.stripe-or .hr { display: flex; align-items: center; width: 100%; }
-.stripe-or .sep { width: 100%; display: flex; justify-content: center; }
-.stripe-or .sepText {
-  font-size: .75rem;
-  font-weight: 600;
+/* "OU" horizontal divider — no !important so Bootstrap .hidden {display:none!important} still works */
+.stripe-or {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--text-3);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 2px 8px;
-  white-space: nowrap;
+  font-size: .78rem;
+  font-weight: 600;
 }
+.stripe-or::before,
+.stripe-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.stripe-or .sep,
+.stripe-or .hr { display: contents; }
+.stripe-or .sepText { white-space: nowrap; }

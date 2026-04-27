@@ -40,11 +40,25 @@
     </div>
   {% endif %}
 
-  <div class="row equal" id="stripe-card-elements">
-    <div class="col-md-5 vcenter stripe-card-holder">
+  {# All card elements stacked vertically in one container #}
+  <div id="stripe-card-elements">
 
+    {# GPay button — hidden until JS confirms it's available #}
+    <div class="stripe-payment-request-button-container hidden">
+      <div id="stripe-payment-request-button">
+        <span class="fa fa-spinner fa-spin"></span>
+      </div>
+    </div>
+
+    {# OR divider — hidden until JS shows GPay #}
+    <div class="stripe-or hidden">
+      <div class="sep"><div class="sepText">{% trans "OR" %}</div></div>
+    </div>
+
+    {# Separate card fields #}
+    <div class="stripe-card-holder">
       <div class="stripe-fields">
-        <div class="stripe-field stripe-field--full">
+        <div class="stripe-field">
           <label class="stripe-label">{% trans "Card number" %}</label>
           <div id="stripe-card-number" class="stripe-input"></div>
         </div>
@@ -59,23 +73,11 @@
           </div>
         </div>
       </div>
+    </div>
 
-    </div>
-    <div class="col-md-1 hidden stripe-or">
-      <div class="hr">
-        <div class="sep">
-          <div class="sepText">{% trans "OR" %}</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-5 vcenter hidden stripe-payment-request-button-container">
-      <div id="stripe-payment-request-button">
-        <span class="fa fa-spinner fa-spin"></span>
-      </div>
-    </div>
-  </div>
+  </div>{# /stripe-card-elements #}
 
-  <p class="help-block" style="margin-top:12px">
+  <p class="help-block" style="margin-top:14px;font-size:.8rem;color:var(--text-3)">
     {% blocktrans trimmed %}
       Your payment will be processed by Stripe, Inc. Your credit card data will be transmitted directly to
       Stripe and never touches our servers.
