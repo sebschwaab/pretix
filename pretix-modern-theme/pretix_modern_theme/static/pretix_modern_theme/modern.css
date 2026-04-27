@@ -820,6 +820,27 @@ input[type="checkbox"], input[type="radio"] {
 .cart-row small.price { font-size: .82rem; color: var(--text-2); font-weight: 500; }
 .cart-row.total { border-top: 2px solid var(--border) !important; border-bottom: none; padding-top: 14px; font-size: 1.05rem; }
 
+/* Total / subtotal rows: label + price on the same line */
+.cart-row.total .product,
+.cart-row.subtotal .product {
+  flex: 1 1 auto;
+  width: auto;
+  margin-bottom: 0;
+}
+
+/* Fee rows use Bootstrap cols — reset them for flex layout */
+.cart-row [class*="col-md-"] {
+  float: none !important;
+  width: auto !important;
+}
+.cart-row .col-md-4:first-child { flex: 1 1 auto; }
+.cart-row [class*="col-md-offset"] { margin-left: auto !important; }
+.cart-row [class*="col-md-"].price { flex: none; text-align: right; }
+
+/* Hide empty spacer cells and clearfix inside cart rows */
+.cart-row > [role="cell"]:not([class]):empty,
+.cart-row > .clearfix { display: none !important; }
+
 #cart-deadline-short {
   font-size: .88rem;
   background: rgba(255,255,255,.18);
