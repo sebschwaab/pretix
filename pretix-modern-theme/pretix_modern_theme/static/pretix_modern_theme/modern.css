@@ -141,8 +141,12 @@ code {
   text-decoration: none !important;
 }
 
-/* Desktop: wrapper is invisible so children are direct flex items */
-.mt-nav-actions { display: contents; }
+/* Desktop: nav actions as inline flex row in the header */
+.mt-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 .mt-burger { display: none; }
 
 .mt-nav-account { display: flex; align-items: center; }
@@ -1203,7 +1207,7 @@ input[type="file"]:hover::file-selector-button {
     box-shadow: var(--sh-md);
     z-index: 998;
   }
-  .mt-nav-actions.open { display: flex; }
+  .mt-nav-actions.open { display: flex !important; }
 
   /* Locales + account: stacked vertically in the dropdown */
   .mt-nav-locales { flex-wrap: wrap; }

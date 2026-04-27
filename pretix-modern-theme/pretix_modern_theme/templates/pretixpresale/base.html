@@ -115,13 +115,13 @@
   var burger = document.getElementById('mt-burger');
   var menu   = document.getElementById('mt-nav-actions');
   if (!burger || !menu) return;
-  burger.addEventListener('click', function () {
+  burger.addEventListener('click', function (e) {
+    e.stopPropagation();
     var open = menu.classList.toggle('open');
-    burger.setAttribute('aria-expanded', open);
-    burger.setAttribute('aria-label', open ? '{% trans "Close menu" %}' : '{% trans "Open menu" %}');
+    burger.setAttribute('aria-expanded', String(open));
   });
   document.addEventListener('click', function (e) {
-    if (!burger.contains(e.target) && !menu.contains(e.target)) {
+    if (menu.classList.contains('open') && !menu.contains(e.target)) {
       menu.classList.remove('open');
       burger.setAttribute('aria-expanded', 'false');
     }
