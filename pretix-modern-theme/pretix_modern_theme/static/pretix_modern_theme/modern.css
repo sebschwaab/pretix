@@ -1223,3 +1223,54 @@ input[type="file"]:hover::file-selector-button {
 [data-theme="dark"] ::-webkit-scrollbar-track { background: var(--bg); }
 [data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+
+/* ── 24. STRIPE ELEMENTS ──────────────────────────────────────────────── */
+/* Card input wrapper */
+#stripe-card {
+  height: 42px !important;
+  padding: 10px 12px !important;
+  border: 1.5px solid var(--border) !important;
+  border-radius: var(--r-sm) !important;
+  background: var(--surface) !important;
+  box-shadow: none !important;
+  transition: border-color .15s ease;
+}
+#stripe-card.is-focused {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent) !important;
+}
+#stripe-card.has-error {
+  border-color: #dc2626 !important;
+}
+
+/* Layout: card | OR | GPay — all on one row */
+#stripe-card-elements {
+  display: flex !important;
+  align-items: center;
+  gap: 0;
+  flex-wrap: nowrap;
+}
+#stripe-card-elements > [class*="col-"] {
+  float: none !important;
+  width: auto !important;
+  padding: 0 8px;
+}
+#stripe-card-elements .stripe-card-holder { flex: 1 1 auto; padding-left: 0; }
+#stripe-card-elements .stripe-or { flex: 0 0 auto; }
+#stripe-card-elements .stripe-payment-request-button-container { flex: 0 1 160px; padding-right: 0; }
+
+/* "OR" / "OU" pill separator */
+.stripe-or { display: flex !important; justify-content: center; }
+.stripe-or .hr { display: flex; align-items: center; width: 100%; }
+.stripe-or .sep { width: 100%; display: flex; justify-content: center; }
+.stripe-or .sepText {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}

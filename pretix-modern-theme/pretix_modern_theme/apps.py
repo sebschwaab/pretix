@@ -23,6 +23,7 @@ class ModernThemeApp(AppConfig):
 
     def ready(self):
         self._inject_template_dir()
+        self._inject_static_dir()
 
     def _inject_template_dir(self):
         """
@@ -50,3 +51,22 @@ class ModernThemeApp(AppConfig):
                     logger.debug('pretix-modern-theme: injected template dir %s', templates_dir)
         except Exception:
             logger.exception('pretix-modern-theme: failed to inject template directory')
+
+    def _inject_static_dir(self):
+        """
+        Insert our static/ directory at the front of STATICFILES_DIRS so that
+        FileSystemFinder (which runs before AppDirectoriesFinder) serves our
+        overridden static assets with priority over any other plugin — including
+        pretix.plugins.stripe whose pretix-stripe.js we customise.
+        """
+        try:
+            from django.conf import settings
+
+            static_dir = os.path.join(os.path.dirname(__file__), 'static')
+            dirs = list(getattr(settings, 'STATICFILES_DIRS', []))
+            if static_dir not in dirs:
+                dirs.insert(0, static_dir)
+                settings.STATICFILES_DIRS = dirs
+                logger.debug('pretix-modern-theme: injected static dir %s', static_dir)
+        except Exception:
+            logger.exception('pretix-modern-theme: failed to inject static directory')
