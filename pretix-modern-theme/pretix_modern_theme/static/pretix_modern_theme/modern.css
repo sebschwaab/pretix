@@ -1236,6 +1236,25 @@ input[type="file"]:hover::file-selector-button {
   .mt-nav-spacer { display: none; }
   .mt-brand { font-size: 1rem; }
 
+  /* ── Cart rows: 2-column grid on tablet too ────────────────────── */
+  .cart-row {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 8px;
+    row-gap: 4px;
+  }
+  .cart-row .product { grid-column: 1 / -1; grid-row: 1; width: auto; margin-bottom: 0; }
+  .cart-row .count   { grid-column: 1; grid-row: 2; align-self: center; }
+  .cart-row .singleprice.price { display: none !important; }
+  .cart-row .totalprice.price  { grid-column: 2; grid-row: 2; margin-left: 0; align-self: center; text-align: right; }
+  .cart-row .col-md-4          { grid-column: 1; grid-row: 1; }
+  .cart-row [class*="col-md-"].price { grid-column: 2; grid-row: 1; text-align: right; }
+  .cart-row.total .product,
+  .cart-row.subtotal .product  { grid-column: 1; grid-row: 1; }
+  .cart-row.total .totalprice.price,
+  .cart-row.subtotal .totalprice.price { grid-column: 2; grid-row: 1; }
+
   .mt-checkout-layout { grid-template-columns: 1fr; }
   .mt-checkout-main { order: 1; }
   .mt-checkout-aside {
