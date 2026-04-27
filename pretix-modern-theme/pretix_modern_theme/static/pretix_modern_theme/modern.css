@@ -475,12 +475,9 @@ article.product-row.variation:last-child { border-bottom: none; }
   transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease);
   padding: 0 !important;
   margin: 0 !important;
-  min-width: 0 !important;
-  width: auto !important;
   /* reset fieldset browser defaults */
   appearance: none;
   -webkit-appearance: none;
-  float: right;
 }
 .input-item-count-group.mt-has-value {
   border-color: var(--primary);
@@ -489,9 +486,9 @@ article.product-row.variation:last-child { border-bottom: none; }
 
 .input-item-count-dec,
 .input-item-count-inc {
-  flex: 0 0 32px;
-  width: 32px !important;
-  height: 40px !important;
+  flex: 0 0 28px;
+  width: 28px !important;
+  height: 36px !important;
   padding: 0 !important;
   font-size: 1.3rem !important;
   font-weight: 700 !important;
@@ -520,10 +517,10 @@ article.product-row.variation:last-child { border-bottom: none; }
 .input-item-count,
 .input-item-count-group input[type="number"],
 .input-item-count-group input {
-  flex: 0 0 2rem;
-  width: 2rem !important;
-  min-width: 2rem !important;
-  height: 40px !important;
+  flex: 0 0 1.8rem;
+  width: 1.8rem !important;
+  min-width: 1.8rem !important;
+  height: 36px !important;
   border: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
@@ -806,8 +803,9 @@ input[type="checkbox"], input[type="radio"] {
 /* ── 14. CHECKOUT STEPS ───────────────────────────────────────────────── */
 .checkout-flow {
   list-style: none;
-  margin: 0 0 36px; padding: 0;
+  margin: 0 0 32px; padding: 8px 0 12px;
   display: flex;
+  align-items: flex-start;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
@@ -818,36 +816,65 @@ input[type="checkbox"], input[type="radio"] {
 .checkout-flow .checkout-step {
   flex: 1;
   min-width: 0;
-  display: flex; align-items: center; gap: 8px;
-  padding: 12px 10px;
-  font-size: .78rem; font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding: 8px 4px 0;
+  font-size: .72rem; font-weight: 600;
   color: var(--text-3);
-  border-right: 1px solid var(--border);
-  transition: background 200ms var(--ease);
 }
-.checkout-flow .checkout-step:last-child { border-right: none; }
-.checkout-flow .checkout-step a { display: contents; text-decoration: none; color: inherit; }
+
+/* Connector line between steps */
+.checkout-flow .checkout-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+.checkout-flow .checkout-step.step-done:not(:last-child)::after {
+  background: var(--success);
+}
+
+.checkout-flow .checkout-step a {
+  display: flex; flex-direction: column; align-items: center;
+  text-decoration: none; color: inherit; width: 100%;
+}
 
 .checkout-step-icon {
-  width: 26px; height: 26px;
+  width: 28px; height: 28px;
   border-radius: 50%;
   background: var(--surface-2);
+  border: 2px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  font-size: .75rem; flex-shrink: 0;
-  transition: background 200ms var(--ease), color 200ms var(--ease);
+  font-size: .72rem; flex-shrink: 0;
+  position: relative; z-index: 1;
+  transition: background 200ms var(--ease), color 200ms var(--ease), border-color 200ms var(--ease);
 }
 
 .checkout-step-label {
+  margin-top: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  min-width: 0;
+  max-width: 100%;
+  padding: 0 4px;
 }
 
 .checkout-step.step-done { color: var(--success); }
-.checkout-step.step-done .checkout-step-icon { background: #dcfce7; color: var(--success); }
-.checkout-step.step-current { color: var(--text); background: var(--surface-2); }
-.checkout-step.step-current .checkout-step-icon { background: var(--primary); color: #fff; }
+.checkout-step.step-done .checkout-step-icon {
+  background: var(--success); color: #fff; border-color: var(--success);
+}
+.checkout-step.step-current { color: var(--primary); }
+.checkout-step.step-current .checkout-step-icon {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.2);
+}
 
 /* ── 15. ORDER / THANK YOU ────────────────────────────────────────────── */
 .mt-thank-you {
@@ -1002,9 +1029,9 @@ input[type="checkbox"], input[type="radio"] {
 
   .btn-lg { padding: 12px 22px !important; }
 
-  .checkout-flow { flex-direction: column; border-radius: var(--r-sm); }
-  .checkout-flow .checkout-step { border-right: none; border-bottom: 1px solid var(--border); }
-  .checkout-flow .checkout-step:last-child { border-bottom: none; }
+  .checkout-flow { padding: 6px 0 10px; }
+  .checkout-step-label { font-size: .65rem; }
+  .checkout-step-icon { width: 24px; height: 24px; font-size: .65rem; }
 
   .mt-thank-you { padding: 36px 20px 32px; }
   .mt-thank-you h2 { font-size: 1.7rem; }
