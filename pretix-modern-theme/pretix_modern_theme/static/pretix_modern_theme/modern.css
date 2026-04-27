@@ -449,7 +449,10 @@ article.product-row.variation {
 }
 article.product-row.variation:last-child { border-bottom: none; }
 
-.availability-box.available { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.availability-box.available {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  overflow: visible;
+}
 .gone    { color: var(--danger); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
 .unavailable { color: var(--warning); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
 
@@ -467,6 +470,8 @@ article.product-row.variation:last-child { border-bottom: none; }
 .input-item-count-group {
   display: inline-flex !important;
   align-items: stretch;
+  width: max-content !important;
+  min-width: max-content !important;
   background: var(--surface);
   border: 2px solid var(--border) !important;
   border-radius: var(--r-sm) !important;
@@ -478,6 +483,8 @@ article.product-row.variation:last-child { border-bottom: none; }
   /* reset fieldset browser defaults */
   appearance: none;
   -webkit-appearance: none;
+  letter-spacing: 0;
+  word-spacing: 0;
 }
 .input-item-count-group.mt-has-value {
   border-color: var(--primary);
@@ -803,14 +810,14 @@ input[type="checkbox"], input[type="radio"] {
 /* ── 14. CHECKOUT STEPS ───────────────────────────────────────────────── */
 .checkout-flow {
   list-style: none;
-  margin: 0 0 32px; padding: 8px 0 12px;
+  margin: 0 0 32px; padding: 14px 8px 14px;
   display: flex;
   align-items: flex-start;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   box-shadow: var(--sh-sm);
-  overflow: hidden;
+  position: relative;
 }
 
 .checkout-flow .checkout-step {
@@ -821,24 +828,24 @@ input[type="checkbox"], input[type="radio"] {
   align-items: center;
   text-align: center;
   position: relative;
-  padding: 8px 4px 0;
+  padding: 0 4px;
   font-size: .72rem; font-weight: 600;
   color: var(--text-3);
 }
 
-/* Connector line between steps */
+/* Connector line: draws from this step's icon center to next step's icon center */
 .checkout-flow .checkout-step:not(:last-child)::after {
   content: '';
   position: absolute;
-  top: 20px;
-  left: 50%;
-  width: 100%;
+  top: 13px; /* half of 26px icon */
+  left: calc(50% + 13px); /* start at icon right edge */
+  right: calc(-50% + 13px); /* end at next icon left edge */
   height: 2px;
   background: var(--border);
   z-index: 0;
 }
 .checkout-flow .checkout-step.step-done:not(:last-child)::after {
-  background: var(--success);
+  background: #16a34a;
 }
 
 .checkout-flow .checkout-step a {
@@ -847,33 +854,37 @@ input[type="checkbox"], input[type="radio"] {
 }
 
 .checkout-step-icon {
-  width: 28px; height: 28px;
+  width: 26px; height: 26px;
   border-radius: 50%;
   background: var(--surface-2);
   border: 2px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  font-size: .72rem; flex-shrink: 0;
+  font-size: .7rem; flex-shrink: 0;
   position: relative; z-index: 1;
   transition: background 200ms var(--ease), color 200ms var(--ease), border-color 200ms var(--ease);
 }
 
 .checkout-step-label {
-  margin-top: 6px;
+  margin-top: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
-  padding: 0 4px;
+  padding: 0 2px;
+  line-height: 1.2;
 }
 
-.checkout-step.step-done { color: var(--success); }
+.checkout-step.step-done { color: #16a34a !important; }
 .checkout-step.step-done .checkout-step-icon {
-  background: var(--success); color: #fff; border-color: var(--success);
+  background: #16a34a !important;
+  color: #fff !important;
+  border-color: #16a34a !important;
 }
-.checkout-step.step-current { color: var(--primary); }
+.checkout-step.step-current { color: var(--primary) !important; }
 .checkout-step.step-current .checkout-step-icon {
-  background: var(--primary); color: #fff; border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99,102,241,.2);
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--primary) !important;
 }
 
 /* ── 15. ORDER / THANK YOU ────────────────────────────────────────────── */
