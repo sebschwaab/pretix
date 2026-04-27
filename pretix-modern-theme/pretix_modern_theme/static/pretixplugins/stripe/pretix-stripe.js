@@ -5,6 +5,9 @@ var pretixstripe = {
     stripe: null,
     elements: null,
     card: null,
+    cardNumber: null,
+    cardExpiry: null,
+    cardCvc: null,
     sepa: null,
     affirm: null,
     klarna: null,
@@ -96,8 +99,8 @@ var pretixstripe = {
                     } else {
                         pretixstripe.paymentRequest = null;
                     }
-                    if ($("#stripe-card").length) {
-                        pretixstripe.card = pretixstripe.elements.create('card', {
+                    if ($("#stripe-card-number").length) {
+                        var _cardStyle = {
                             'style': {
                                 'base': {
                                     'fontFamily': 'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
@@ -116,6 +119,31 @@ var pretixstripe = {
                                 focus: 'is-focused',
                                 invalid: 'has-error',
                             }
+                        };
+                        pretixstripe.cardNumber = pretixstripe.elements.create('cardNumber', _cardStyle);
+                        pretixstripe.cardExpiry = pretixstripe.elements.create('cardExpiry', _cardStyle);
+                        pretixstripe.cardCvc    = pretixstripe.elements.create('cardCvc',    _cardStyle);
+                        pretixstripe.cardNumber.mount("#stripe-card-number");
+                        pretixstripe.cardExpiry.mount("#stripe-card-expiry");
+                        pretixstripe.cardCvc.mount("#stripe-card-cvc");
+                        // Keep .card pointing to cardNumber so pm_request works unchanged
+                        pretixstripe.card = pretixstripe.cardNumber;
+                        pretixstripe.cardNumber.on('ready', function () {
+                            $('.stripe-container').closest("form").find(".checkout-button-row .btn-primary").prop("disabled", false);
+                        });
+                    } else if ($("#stripe-card").length) {
+                        pretixstripe.card = pretixstripe.elements.create('card', {
+                            'style': {
+                                'base': {
+                                    'fontFamily': '"Open Sans","OpenSans","Helvetica Neue",Helvetica,Arial,sans-serif',
+                                    'fontSize': '14px',
+                                    'color': '#555555',
+                                    'lineHeight': '1.42857',
+                                    '::placeholder': { color: 'rgba(0,0,0,0.4)' },
+                                },
+                                'invalid': { 'color': 'red' },
+                            },
+                            classes: { focus: 'is-focused', invalid: 'has-error' }
                         });
                         pretixstripe.card.mount("#stripe-card");
                         pretixstripe.card.on('ready', function () {

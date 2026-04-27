@@ -1226,7 +1226,43 @@ input[type="file"]:hover::file-selector-button {
 
 
 /* ── 24. STRIPE ELEMENTS ──────────────────────────────────────────────── */
-/* Card input wrapper */
+
+/* Separate card fields layout */
+.stripe-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.stripe-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.stripe-label {
+  display: block;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-bottom: 4px;
+  letter-spacing: .02em;
+}
+/* Each Stripe iframe wrapper */
+.stripe-input {
+  height: 42px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.stripe-input.is-focused {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+.stripe-input.has-error { border-color: #dc2626; }
+
+/* Legacy single-element fallback */
 #stripe-card {
   height: 42px !important;
   padding: 10px 12px !important;
@@ -1236,15 +1272,10 @@ input[type="file"]:hover::file-selector-button {
   box-shadow: none !important;
   transition: border-color .15s ease;
 }
-#stripe-card.is-focused {
-  border-color: var(--primary) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent) !important;
-}
-#stripe-card.has-error {
-  border-color: #dc2626 !important;
-}
+#stripe-card.is-focused { border-color: var(--primary) !important; }
+#stripe-card.has-error  { border-color: #dc2626 !important; }
 
-/* Layout: card | OR | GPay — all on one row */
+/* Layout: card fields | OR | GPay — all on one row */
 #stripe-card-elements {
   display: flex !important;
   align-items: center;
@@ -1258,7 +1289,7 @@ input[type="file"]:hover::file-selector-button {
 }
 #stripe-card-elements .stripe-card-holder { flex: 1 1 auto; padding-left: 0; }
 #stripe-card-elements .stripe-or { flex: 0 0 auto; }
-#stripe-card-elements .stripe-payment-request-button-container { flex: 0 1 160px; padding-right: 0; }
+#stripe-card-elements .stripe-payment-request-button-container { flex: 0 1 180px; padding-right: 0; }
 
 /* "OR" / "OU" pill separator */
 .stripe-or { display: flex !important; justify-content: center; }
