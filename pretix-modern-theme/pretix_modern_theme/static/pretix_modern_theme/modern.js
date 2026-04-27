@@ -28,18 +28,30 @@
     applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
   }
 
-  /* ── Qty stepper animation ───────────────────────────────────────────── */
+  /* ── Qty stepper animation + auto-width ─────────────────────────────── */
+  var fieldSizingSupported = CSS.supports('field-sizing', 'content');
+
+  function resizeStepperInput(input) {
+    if (fieldSizingSupported) return;
+    var len = String(input.value || '0').length;
+    input.style.width = Math.max(2.6, len * 1.1 + 1.2) + 'rem';
+    input.style.minWidth = input.style.width;
+  }
+
   function animateSteppers() {
     document.querySelectorAll('.input-item-count').forEach(function (input) {
       if (input.dataset.mtWired) return;
       input.dataset.mtWired = '1';
+      resizeStepperInput(input);
       input.addEventListener('change', function () {
+        resizeStepperInput(input);
         var val = parseInt(input.value, 10) || 0;
         var wrapper = input.closest('.input-item-count-group');
         if (wrapper) {
           wrapper.classList.toggle('mt-has-value', val > 0);
         }
       });
+      input.addEventListener('input', function () { resizeStepperInput(input); });
       /* Trigger initial state */
       var event = new Event('change');
       input.dispatchEvent(event);

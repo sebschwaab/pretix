@@ -371,6 +371,19 @@ details.panel > summary.panel-heading::marker { display: none; }
   color: var(--text);
 }
 
+/* Addon category legend (fieldset > legend) — Bootstrap forces #333 color */
+fieldset[data-addon-max-count] > legend {
+  display: block;
+  width: 100%;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text) !important;
+  border: none;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+
 /* Product card base */
 article.product-row.simple,
 article.item-with-variations {
@@ -532,9 +545,10 @@ article.product-row.variation:last-child { border-bottom: none; }
 .input-item-count,
 .input-item-count-group input[type="number"],
 .input-item-count-group input {
-  flex: 0 0 1.8rem;
-  width: 1.8rem !important;
-  min-width: 1.8rem !important;
+  flex: 0 1 auto;
+  field-sizing: content;   /* Chrome 123+: auto-resize to value width */
+  min-width: 2.6rem !important;
+  width: 2.6rem !important;
   height: 36px !important;
   border: none !important;
   border-radius: 0 !important;
@@ -1455,3 +1469,121 @@ input[type="file"]:hover::file-selector-button {
 .stripe-or .sep,
 .stripe-or .hr { display: contents; }
 .stripe-or .sepText { white-space: nowrap; }
+
+/* ── 25. CHECKOUT FORM — DARK MODE OVERRIDES ──────────────────────────── */
+
+/* Profile autofill / save-to-profile banners:
+   Bootstrap hard-codes background:#f5f5f5 via $panel-footer-bg */
+.profile-select-container,
+.profile-save-container {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+.profile-save-container .help-block,
+.profile-desc,
+.single-profile-desc {
+  color: var(--text-2) !important;
+}
+.profile-add-on {
+  border-color: var(--border) !important;
+}
+
+/* Bootstrap datetimepicker popup */
+.bootstrap-datetimepicker-widget.dropdown-menu {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--sh-md) !important;
+  color: var(--text) !important;
+  border-radius: var(--r-md) !important;
+}
+.bootstrap-datetimepicker-widget table th {
+  color: var(--text-2) !important;
+  background: transparent !important;
+  border-color: var(--border) !important;
+}
+.bootstrap-datetimepicker-widget table td {
+  color: var(--text) !important;
+  background: transparent !important;
+}
+.bootstrap-datetimepicker-widget table td:hover,
+.bootstrap-datetimepicker-widget table th:hover {
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+}
+.bootstrap-datetimepicker-widget table td.active,
+.bootstrap-datetimepicker-widget table td.active:hover {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+.bootstrap-datetimepicker-widget table td.today:before {
+  border-bottom-color: var(--primary) !important;
+}
+.bootstrap-datetimepicker-widget table td.disabled,
+.bootstrap-datetimepicker-widget table td.disabled:hover {
+  color: var(--text-3) !important;
+  background: transparent !important;
+}
+.bootstrap-datetimepicker-widget table td span {
+  color: var(--text) !important;
+  background: transparent !important;
+}
+.bootstrap-datetimepicker-widget table td span:hover {
+  background: var(--surface-2) !important;
+}
+.bootstrap-datetimepicker-widget table td span.active {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+.bootstrap-datetimepicker-widget .picker-switch,
+.bootstrap-datetimepicker-widget .prev,
+.bootstrap-datetimepicker-widget .next {
+  color: var(--text) !important;
+}
+.bootstrap-datetimepicker-widget .picker-switch:hover,
+.bootstrap-datetimepicker-widget .prev:hover,
+.bootstrap-datetimepicker-widget .next:hover {
+  background: var(--surface-2) !important;
+}
+/* Arrow for popup */
+[data-theme="dark"] .bootstrap-datetimepicker-widget.dropdown-menu::after {
+  border-bottom-color: var(--surface) !important;
+  border-top-color: var(--surface) !important;
+}
+[data-theme="dark"] .bootstrap-datetimepicker-widget.dropdown-menu::before {
+  border-bottom-color: var(--border) !important;
+  border-top-color: var(--border) !important;
+}
+
+/* Signature / drawing canvas widgets — white canvas on dark bg */
+[data-theme="dark"] canvas {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+
+/* Checkbox + radio: ensure they render against the correct surface in dark mode */
+[data-theme="dark"] input[type="checkbox"],
+[data-theme="dark"] input[type="radio"] {
+  color-scheme: dark;
+}
+
+/* Bootstrap .checkbox / .radio wrapper divs can inherit a white bg from a parent */
+[data-theme="dark"] .checkbox label,
+[data-theme="dark"] .radio label {
+  color: var(--text) !important;
+}
+
+/* dropdown-menu (Bootstrap popovers / selects used by questions) */
+[data-theme="dark"] .dropdown-menu {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--sh-md) !important;
+}
+[data-theme="dark"] .dropdown-menu > li > a {
+  color: var(--text) !important;
+}
+[data-theme="dark"] .dropdown-menu > li > a:hover,
+[data-theme="dark"] .dropdown-menu > .active > a {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
