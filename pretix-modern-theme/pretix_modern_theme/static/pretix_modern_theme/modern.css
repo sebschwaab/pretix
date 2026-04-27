@@ -36,8 +36,8 @@
   --surface-2: #334155;
   --border:    #334155;
   --text:      #f1f5f9;
-  --text-2:    #94a3b8;
-  --text-3:    #475569;
+  --text-2:    #cbd5e1;
+  --text-3:    #94a3b8;
   --sh-sm: 0 1px 2px rgba(0,0,0,.4);
   --sh:    0 1px 3px rgba(0,0,0,.5);
   --sh-md: 0 4px 6px rgba(0,0,0,.5);
@@ -1155,6 +1155,17 @@ input[type="file"]:hover::file-selector-button {
 
 /* Tablet: stack checkout sidebar below main */
 @media (max-width: 991px) {
+  /* Compact account label on tablet */
+  .mt-nav-account a {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .82rem;
+    padding: 5px 10px;
+  }
+  .mt-brand { font-size: 1rem; }
+
   .mt-checkout-layout { grid-template-columns: 1fr; }
   .mt-checkout-main { order: 1; }
   .mt-checkout-aside {
@@ -1166,6 +1177,58 @@ input[type="file"]:hover::file-selector-button {
 
 /* Mobile */
 @media (max-width: 767px) {
+  /* ── Header: 2-row layout ───────────────────────────────────────── */
+  :root { --nav-h: 100px; }
+
+  .mt-header { height: auto; }
+  .mt-header-inner {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 8px 14px;
+    gap: 0 8px;
+  }
+  /* Row 1: brand (grows) + theme toggle */
+  .mt-brand {
+    order: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .88rem;
+  }
+  .mt-nav-spacer { display: none; }
+  .mt-theme-btn { order: 2; }
+  /* Invisible full-width item forces line break between row 1 and row 2 */
+  .mt-header-inner::after {
+    content: '';
+    order: 3;
+    width: 100%;
+    height: 0;
+  }
+  /* Row 2: locales + account */
+  .mt-nav-locales {
+    order: 4;
+    align-self: center;
+    padding-bottom: 8px;
+  }
+  .mt-nav-account {
+    order: 5;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    align-self: center;
+    padding-bottom: 8px;
+  }
+  .mt-nav-account a {
+    font-size: .8rem;
+    padding: 4px 10px;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .mt-wrapper { padding: 24px 16px 60px; }
 
   .mt-hero { padding: 36px 16px 32px; }
