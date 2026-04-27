@@ -73,11 +73,33 @@
     badge.style.display = total > 0 ? '' : 'none';
   }
 
+  /* ── Burger menu ─────────────────────────────────────────────────────── */
+  function initBurger() {
+    var burger = document.getElementById('mt-burger');
+    var menu   = document.getElementById('mt-nav-actions');
+    if (!burger || !menu) return;
+
+    burger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = menu.classList.toggle('open');
+      burger.setAttribute('aria-expanded', String(open));
+    });
+
+    document.addEventListener('click', function (e) {
+      if (menu.classList.contains('open') && !menu.contains(e.target) && !burger.contains(e.target)) {
+        menu.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
   /* ── Bootstrap ───────────────────────────────────────────────────────── */
   function init() {
     /* Theme toggle button */
     var btn = document.getElementById('mt-theme-toggle');
     if (btn) btn.addEventListener('click', toggleTheme);
+
+    initBurger();
 
     /* Apply correct icon state now */
     applyTheme(getTheme());
