@@ -141,6 +141,10 @@ code {
   text-decoration: none !important;
 }
 
+/* Desktop: wrapper is invisible so children are direct flex items */
+.mt-nav-actions { display: contents; }
+.mt-burger { display: none; }
+
 .mt-nav-account { display: flex; align-items: center; }
 .mt-nav-account a {
   font-size: .88rem;
@@ -1155,15 +1159,58 @@ input[type="file"]:hover::file-selector-button {
 
 /* Tablet: stack checkout sidebar below main */
 @media (max-width: 991px) {
-  /* Compact account label on tablet */
-  .mt-nav-account a {
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: .82rem;
-    padding: 5px 10px;
+  /* ── Burger menu ──────────────────────────────────────────────── */
+  .mt-burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    padding: 7px;
+    color: var(--text);
   }
+  .mt-burger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform 250ms ease, opacity 200ms ease;
+    transform-origin: center;
+  }
+  .mt-burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .mt-burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .mt-burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Nav actions: hidden by default, dropdown when .open */
+  .mt-nav-actions {
+    display: none;
+    position: absolute;
+    top: var(--nav-h);
+    left: 0; right: 0;
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--sh-md);
+    z-index: 998;
+  }
+  .mt-nav-actions.open { display: flex; }
+
+  /* Locales + account: stacked vertically in the dropdown */
+  .mt-nav-locales { flex-wrap: wrap; }
+  .mt-nav-account { justify-content: flex-start; }
+  .mt-nav-account a { max-width: none; white-space: normal; }
+
+  .mt-nav-spacer { display: none; }
   .mt-brand { font-size: 1rem; }
 
   .mt-checkout-layout { grid-template-columns: 1fr; }
@@ -1177,57 +1224,8 @@ input[type="file"]:hover::file-selector-button {
 
 /* Mobile */
 @media (max-width: 767px) {
-  /* ── Header: 2-row layout ───────────────────────────────────────── */
-  :root { --nav-h: 100px; }
-
-  .mt-header { height: auto; }
-  .mt-header-inner {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 8px 14px;
-    gap: 0 8px;
-  }
-  /* Row 1: brand (grows) + theme toggle */
-  .mt-brand {
-    order: 1;
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: .88rem;
-  }
-  .mt-nav-spacer { display: none; }
-  .mt-theme-btn { order: 2; }
-  /* Invisible full-width item forces line break between row 1 and row 2 */
-  .mt-header-inner::after {
-    content: '';
-    order: 3;
-    width: 100%;
-    height: 0;
-  }
-  /* Row 2: locales + account */
-  .mt-nav-locales {
-    order: 4;
-    align-self: center;
-    padding-bottom: 8px;
-  }
-  .mt-nav-account {
-    order: 5;
-    flex: 1 1 auto;
-    justify-content: flex-end;
-    align-self: center;
-    padding-bottom: 8px;
-  }
-  .mt-nav-account a {
-    font-size: .8rem;
-    padding: 4px 10px;
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+  .mt-header-inner { padding: 0 12px; gap: 8px; }
+  .mt-brand { font-size: .88rem; }
 
   .mt-wrapper { padding: 24px 16px 60px; }
 

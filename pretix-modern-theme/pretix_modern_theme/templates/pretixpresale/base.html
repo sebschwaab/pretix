@@ -80,7 +80,10 @@
 
     <div class="mt-nav-spacer"></div>
 
-    {% block navbar_actions %}{% endblock %}
+    {# Desktop: nav actions inline. Mobile: moved into burger dropdown. #}
+    <div class="mt-nav-actions" id="mt-nav-actions" aria-label="{% trans "Navigation" %}">
+      {% block navbar_actions %}{% endblock %}
+    </div>
 
     <button class="mt-theme-btn" id="mt-theme-toggle"
             aria-label="{% trans "Toggle dark/light mode" %}"
@@ -96,8 +99,35 @@
       </svg>
     </button>
 
+    {# Burger button — hidden on desktop, shown on tablet/mobile #}
+    <button class="mt-burger" id="mt-burger"
+            aria-label="{% trans "Open menu" %}"
+            aria-expanded="false"
+            aria-controls="mt-nav-actions">
+      <span></span><span></span><span></span>
+    </button>
+
   </div>
 </header>
+
+<script>
+(function () {
+  var burger = document.getElementById('mt-burger');
+  var menu   = document.getElementById('mt-nav-actions');
+  if (!burger || !menu) return;
+  burger.addEventListener('click', function () {
+    var open = menu.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open);
+    burger.setAttribute('aria-label', open ? '{% trans "Close menu" %}' : '{% trans "Open menu" %}');
+  });
+  document.addEventListener('click', function (e) {
+    if (!burger.contains(e.target) && !menu.contains(e.target)) {
+      menu.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+}());
+</script>
 
 {% if ie_deprecation_warning %}
   <div class="offline-banner" role="alert">
