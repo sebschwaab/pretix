@@ -405,7 +405,7 @@ article.product-row.variation.row {
 }
 
 /* Price and availability alignment */
-article.product-row .price        { text-align: right; padding-right: 12px !important; }
+article.product-row .price        { text-align: right; padding-right: 20px !important; }
 article.product-row .availability-box { text-align: right; padding-left: 4px !important; }
 article.product-row.variation.row > .price        { text-align: right; }
 article.product-row.variation.row > .availability-box { text-align: right; }
@@ -850,7 +850,7 @@ input[type="checkbox"], input[type="radio"] {
   top: 12px;
   left: 0;
   right: calc(50% + 13px); /* ends at icon left edge */
-  height: 4px;
+  height: 5px;
   background: var(--border);
   z-index: 0;
 }
@@ -870,7 +870,7 @@ input[type="checkbox"], input[type="radio"] {
   top: 12px;
   left: calc(50% + 13px); /* starts at icon right edge */
   right: 0;
-  height: 3px;
+  height: 5px;
   background: var(--border);
   z-index: 0;
 }
@@ -1024,7 +1024,66 @@ input[type="checkbox"], input[type="radio"] {
   font-size: .93rem;
 }
 
-/* ── 21. MISC ─────────────────────────────────────────────────────────── */
+/* ── 21. FILE UPLOAD ──────────────────────────────────────────────────── */
+input[type="file"],
+input[type="file"].form-control {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 !important;
+  height: auto !important;
+  min-height: 48px;
+  border: 2px dashed var(--border) !important;
+  border-radius: var(--r-md) !important;
+  background: var(--surface-2) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  font-size: .88rem;
+  color: var(--text-2);
+  transition: border-color 200ms var(--ease), background 200ms var(--ease);
+  overflow: hidden;
+}
+
+input[type="file"]:hover,
+input[type="file"]:focus {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 5%, var(--surface)) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input[type="file"]::file-selector-button {
+  height: 100%;
+  min-height: 48px;
+  padding: 0 20px;
+  margin-right: 16px;
+  border: none;
+  border-right: 2px solid var(--border);
+  border-radius: 0;
+  background: var(--primary);
+  color: #fff;
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms var(--ease);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+input[type="file"]:hover::file-selector-button {
+  background: var(--primary-dk);
+}
+
+/* Dark mode */
+[data-theme="dark"] input[type="file"],
+[data-theme="dark"] input[type="file"].form-control {
+  border-color: var(--border) !important;
+  background: var(--surface-2) !important;
+  color: var(--text-2);
+}
+
+/* ── 23. MISC ─────────────────────────────────────────────────────────── */
 :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
 
 .text-muted { color: var(--text-2) !important; }
