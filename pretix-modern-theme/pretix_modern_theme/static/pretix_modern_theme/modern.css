@@ -831,15 +831,37 @@ input[type="checkbox"], input[type="radio"] {
   padding: 0 4px;
   font-size: .72rem; font-weight: 600;
   color: var(--text-3);
+  background: transparent !important;
 }
 
-/* Connector line: draws from this step's icon center to next step's icon center */
+/* Connector line drawn on the CURRENT step, looking LEFT toward the previous step.
+   Stays entirely within the step's own bounds — no bleed into neighbours. */
+.checkout-flow .checkout-step:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: 13px;
+  left: 0;
+  right: calc(50% + 13px); /* ends at icon left edge */
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+/* When THIS step is done, the left connector is also done (green) */
+.checkout-flow .checkout-step.step-done:not(:first-child)::before {
+  background: #16a34a;
+}
+/* When THIS step is current, left connector = previous was done = green */
+.checkout-flow .checkout-step.step-current:not(:first-child)::before {
+  background: #16a34a;
+}
+
+/* Right half of connector — from icon right edge to step's right boundary */
 .checkout-flow .checkout-step:not(:last-child)::after {
   content: '';
   position: absolute;
-  top: 13px; /* half of 26px icon */
-  left: calc(50% + 13px); /* start at icon right edge */
-  right: calc(-50% + 13px); /* end at next icon left edge */
+  top: 13px;
+  left: calc(50% + 13px); /* starts at icon right edge */
+  right: 0;
   height: 2px;
   background: var(--border);
   z-index: 0;
