@@ -779,39 +779,43 @@ input[type="checkbox"], input[type="radio"] {
 
 .cart-row {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 4px 8px;
+  align-items: baseline;
+  gap: 2px 6px;
   padding: 10px 0;
   border-bottom: 1px solid var(--border);
 }
 .cart-row:last-child { border-bottom: none; }
-/* Item name takes all available space */
-.cart-row > :first-child { flex: 1 1 120px; min-width: 0; }
-/* Quantity: "4 ×" */
+/* Product name: full-width own line */
+.cart-row .product {
+  width: 100%;
+  flex: none;
+  min-width: 0;
+  margin-bottom: 2px;
+}
+/* Quantity: "4 ×" — skip empty total-row divs */
 .cart-row .count {
   color: var(--text-3);
   font-size: .82rem;
   font-weight: 500;
   white-space: nowrap;
 }
-.cart-row .count::after { content: '\00a0×'; }
-/* Unit price: secondary/muted */
+.cart-row .count:not(:empty)::after { content: '\00a0\00d7'; }
+/* Unit price: small/muted */
 .cart-row .singleprice.price {
   font-weight: 400 !important;
   color: var(--text-2) !important;
   font-size: .82rem !important;
   white-space: nowrap;
 }
-/* Total price: primary/bold — the "real" price */
+/* Total price: right-aligned, bold, primary */
 .cart-row .totalprice.price {
+  margin-left: auto;
   font-weight: 700 !important;
   color: var(--primary) !important;
   font-size: .95rem !important;
   white-space: nowrap;
-  margin-left: auto;
 }
-/* Subtotal/total rows */
 .cart-row .price small,
 .cart-row small.price { font-size: .82rem; color: var(--text-2); font-weight: 500; }
 .cart-row.total { border-top: 2px solid var(--border) !important; border-bottom: none; padding-top: 14px; font-size: 1.05rem; }
