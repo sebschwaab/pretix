@@ -827,6 +827,11 @@ input[type="checkbox"], input[type="radio"] {
   width: auto;
   margin-bottom: 0;
 }
+/* Hide the empty count/singleprice spacers in total rows so totalprice stays on same line */
+.cart-row.total .count,
+.cart-row.total .singleprice,
+.cart-row.subtotal .count,
+.cart-row.subtotal .singleprice { display: none !important; }
 
 /* Fee rows use Bootstrap cols — reset them for flex layout */
 .cart-row [class*="col-md-"] {
