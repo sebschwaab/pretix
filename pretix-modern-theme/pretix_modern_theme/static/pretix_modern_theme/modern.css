@@ -1201,18 +1201,37 @@ input[type="file"]:hover::file-selector-button {
     left: 0; right: 0;
     background: var(--surface);
     border-bottom: 2px solid var(--border);
-    padding: 16px 20px;
+    padding: 20px 16px 24px;
     flex-direction: column;
-    gap: 12px;
+    align-items: center;
+    gap: 16px;
     box-shadow: var(--sh-md);
     z-index: 998;
   }
   .mt-nav-actions.open { display: flex !important; }
 
-  /* Locales + account: stacked vertically in the dropdown */
-  .mt-nav-locales { flex-wrap: wrap; }
-  .mt-nav-account { justify-content: flex-start; }
-  .mt-nav-account a { max-width: none; white-space: normal; }
+  /* Items centered in dropdown */
+  .mt-nav-locales { justify-content: center; flex-wrap: wrap; }
+  .mt-nav-account { justify-content: center; }
+  .mt-nav-account a { max-width: none; white-space: normal; text-align: center; }
+
+  /* Theme toggle in dropdown: full label style */
+  .mt-nav-actions .mt-theme-btn {
+    width: auto;
+    height: auto;
+    padding: 8px 20px;
+    border-radius: var(--r-sm);
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .88rem;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+  .mt-nav-actions .mt-theme-btn::after {
+    content: attr(data-label);
+  }
 
   .mt-nav-spacer { display: none; }
   .mt-brand { font-size: 1rem; }
@@ -1230,6 +1249,51 @@ input[type="file"]:hover::file-selector-button {
 @media (max-width: 767px) {
   .mt-header-inner { padding: 0 12px; gap: 8px; }
   .mt-brand { font-size: .88rem; }
+
+  /* ── Cart rows: 2-column grid on mobile ────────────────────────── */
+  /* Row 1: product name full width
+     Row 2: stepper/qty left  |  total price right               */
+  .cart-row {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 8px;
+    row-gap: 4px;
+  }
+  .cart-row .product {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: auto;
+    margin-bottom: 0;
+  }
+  .cart-row .count {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: center;
+  }
+  /* Hide unit price on mobile — qty × total is enough */
+  .cart-row .singleprice.price { display: none !important; }
+  .cart-row .totalprice.price {
+    grid-column: 2;
+    grid-row: 2;
+    margin-left: 0;
+    align-self: center;
+    text-align: right;
+  }
+  /* Fee rows (Bootstrap cols) — keep simple flex */
+  .cart-row .col-md-4 { grid-column: 1; grid-row: 1; }
+  .cart-row [class*="col-md-"].price { grid-column: 2; grid-row: 1; text-align: right; }
+  /* Total/subtotal rows */
+  .cart-row.total .product,
+  .cart-row.subtotal .product {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .cart-row.total .totalprice.price,
+  .cart-row.subtotal .totalprice.price {
+    grid-column: 2;
+    grid-row: 1;
+  }
 
   .mt-wrapper { padding: 24px 16px 60px; }
 

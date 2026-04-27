@@ -18,7 +18,8 @@
     var btn = document.getElementById('mt-theme-toggle');
     if (btn) {
       btn.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false');
-      btn.querySelector('.mt-icon-sun') && (btn.querySelector('.mt-icon-sun').style.display = t === 'dark' ? '' : 'none');
+      btn.setAttribute('data-label', t === 'dark' ? 'Mode clair' : 'Mode sombre');
+      btn.querySelector('.mt-icon-sun')  && (btn.querySelector('.mt-icon-sun').style.display  = t === 'dark' ? '' : 'none');
       btn.querySelector('.mt-icon-moon') && (btn.querySelector('.mt-icon-moon').style.display = t === 'dark' ? 'none' : '');
     }
   }
