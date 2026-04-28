@@ -1132,6 +1132,8 @@ input[type="checkbox"], input[type="radio"] {
   color: var(--text-3) !important;
 }
 .mt-footer-links li:last-child a:hover { color: var(--text-2) !important; }
+/* Fix missing space between anchor and following text in poweredby string */
+.mt-footer-links li:last-child a::after { content: ' '; }
 
 .site-notice-top, .site-notice-bottom {
   background: var(--surface);
@@ -1209,7 +1211,147 @@ input[type="file"]:hover::file-selector-button {
   padding-bottom: 10px; border-bottom: 2px solid var(--border);
 }
 
-/* ── 22. RESPONSIVE ───────────────────────────────────────────────────── */
+/* ── 22. CUSTOMER ACCOUNT PAGES ───────────────────────────────────────── */
+
+/* Top bar: language selector + login status (above the mt-wrapper) */
+.container.page-header-links {
+  max-width: 100% !important;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 24px !important;
+  display: flex !important;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  font-size: .84rem;
+}
+.page-header-links .header-part { float: none !important; display: flex; gap: 16px; align-items: center; }
+.page-header-links .locales { display: flex; gap: 4px; align-items: center; }
+.page-header-links .locales a,
+.page-header-links .loginbox a,
+.page-header-links a {
+  font-size: .82rem; font-weight: 500;
+  color: var(--text-2) !important;
+  padding: 3px 10px;
+  border-radius: 6px;
+  transition: all 150ms var(--ease);
+  text-decoration: none !important;
+}
+.page-header-links .locales a.active,
+.page-header-links .locales a:hover {
+  background: var(--primary); color: #fff !important;
+}
+.page-header-links .loginbox { display: inline-flex; gap: 12px; align-items: center; }
+.page-header-links a:hover { color: var(--primary) !important; }
+
+/* Organizer logo area */
+.page-header {
+  margin: 0 !important;
+  padding: 24px 0 20px !important;
+  border-bottom: 1px solid var(--border) !important;
+  background: transparent !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--text) !important;
+}
+.page-header .pull-left,
+.page-header .pull-right { float: none !important; }
+.page-header h1 a { color: var(--text) !important; font-size: 1.6rem; }
+.organizer-logo { max-height: 80px; width: auto; }
+.pager-header-with-logo .clearfix { display: none; }
+.page-header .loginbox { display: flex; gap: 12px; align-items: center; font-size: .84rem; }
+.page-header .loginbox a { color: var(--text-2) !important; font-weight: 500; }
+.page-header .loginbox a:hover { color: var(--primary) !important; }
+
+/* Customer info card (dl.row inside .blank-after) */
+.blank-after > dl.row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 20px 24px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-sm);
+}
+.blank-after > dl.row dt {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text) !important;
+  margin-bottom: 4px;
+}
+.blank-after > dl.row dd {
+  color: var(--text-2);
+  font-size: .9rem;
+  margin-bottom: 4px;
+  margin-left: 0 !important;
+}
+.blank-after > dl.row dd .list-inline { padding: 0; margin: 8px 0 0; }
+.blank-after > dl.row dd .list-inline li { margin: 0; margin-right: 16px; }
+.blank-after > dl.row dd .list-inline li a { font-size: .84rem; color: var(--primary) !important; }
+
+/* Sub-nav tabs (Commandes, Adhésions, etc.) */
+.subnav { margin: 8px 0 24px; }
+.subnav .list-inline {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none;
+  border-bottom: 2px solid var(--border);
+}
+.subnav .list-inline li { margin: 0 !important; }
+.subnav .list-inline li a {
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--text-2) !important;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color 150ms var(--ease), border-color 150ms var(--ease);
+  text-decoration: none !important;
+}
+.subnav .list-inline li a:hover { color: var(--primary) !important; border-bottom-color: var(--primary); }
+.subnav .list-inline li a.active { color: var(--primary) !important; border-bottom-color: var(--primary); }
+
+/* Orders list (alternating rows) */
+.event-list.alternating-rows { margin: 0 !important; }
+.event-list.alternating-rows article.row {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  margin: 0 !important;
+  color: var(--text);
+  transition: background 150ms var(--ease);
+}
+.event-list.alternating-rows article.row:last-child { border-bottom: none; }
+.event-list.alternating-rows article.row:hover { background: var(--surface-2) !important; }
+.event-list.alternating-rows article.row h4 { margin: 0 0 4px; font-size: .95rem; }
+.event-list.alternating-rows article.row h4 a { color: var(--primary) !important; font-weight: 700; }
+.event-list.alternating-rows article.row p { margin: 0; font-size: .88rem; }
+
+/* Customer ID badge */
+.col-sm-6.text-right dt {
+  font-size: .72rem !important;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-3) !important;
+  font-weight: 700;
+}
+.col-sm-6.text-right dd {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary) !important;
+  font-family: 'Courier New', monospace;
+  letter-spacing: .05em;
+}
+
+/* ── 22c. RESPONSIVE ──────────────────────────────────────────────────── */
 
 /* Tablet: stack checkout sidebar below main */
 @media (max-width: 991px) {
