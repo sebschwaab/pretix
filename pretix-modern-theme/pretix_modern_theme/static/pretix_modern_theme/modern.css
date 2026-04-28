@@ -1331,6 +1331,63 @@ input[type="file"]:hover::file-selector-button {
 .event-list.alternating-rows article.row h4 a { color: var(--primary) !important; font-weight: 700; }
 .event-list.alternating-rows article.row p { margin: 0; font-size: .88rem; }
 
+/* ── 23. CALENDAR NAV (Liste / Semaine / Mois / Journée / iCal) ───────── */
+
+.mt-calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 0 20px;
+}
+.mt-calendar-nav-tabs {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 4px;
+  gap: 2px;
+}
+.mt-cal-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-2) !important;
+  border-radius: calc(var(--r-md) - 2px);
+  text-decoration: none !important;
+  transition: background 150ms var(--ease), color 150ms var(--ease);
+  white-space: nowrap;
+}
+.mt-cal-tab:hover {
+  background: var(--surface-2);
+  color: var(--text) !important;
+}
+.mt-cal-tab.active {
+  background: var(--primary);
+  color: #fff !important;
+}
+.mt-cal-ical {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-2) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  text-decoration: none !important;
+  transition: background 150ms var(--ease), color 150ms var(--ease), border-color 150ms var(--ease);
+}
+.mt-cal-ical:hover {
+  background: var(--surface-2);
+  color: var(--text) !important;
+  border-color: var(--primary);
+}
+
 /* ── 22c. RESPONSIVE ──────────────────────────────────────────────────── */
 
 /* Tablet: stack checkout sidebar below main */
