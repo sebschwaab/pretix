@@ -1283,36 +1283,36 @@ input[type="file"]:hover::file-selector-button {
 
 /* Sub-nav tabs */
 .mt-subnav {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   gap: 4px;
   margin-bottom: 24px;
-  border-bottom: 2px solid var(--border);
-  padding-bottom: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 4px;
 }
 .mt-subnav-tab {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 18px;
-  font-size: .88rem;
+  padding: 7px 16px;
+  font-size: .85rem;
   font-weight: 600;
   color: var(--text-2) !important;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  border-radius: var(--r-sm) var(--r-sm) 0 0;
-  transition: color 150ms var(--ease), background 150ms var(--ease), border-color 150ms var(--ease);
+  border-radius: calc(var(--r-md) - 2px);
+  transition: color 150ms var(--ease), background 150ms var(--ease);
   text-decoration: none !important;
+  white-space: nowrap;
 }
 .mt-subnav-tab:hover {
-  color: var(--primary) !important;
+  color: var(--text) !important;
   background: var(--surface-2);
   text-decoration: none !important;
 }
 .mt-subnav-tab.active {
-  color: var(--primary) !important;
-  border-bottom-color: var(--primary);
-  background: var(--surface-2);
+  color: #fff !important;
+  background: var(--primary);
 }
 
 /* Orders list (alternating rows) */
