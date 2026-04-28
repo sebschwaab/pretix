@@ -34,8 +34,9 @@
   function resizeStepperInput(input) {
     if (fieldSizingSupported) return;
     var len = String(input.value || '0').length;
-    input.style.width = Math.max(2.6, len * 1.1 + 1.2) + 'rem';
-    input.style.minWidth = input.style.width;
+    var w = Math.max(2.6, len * 1.1 + 1.2) + 'rem';
+    input.style.setProperty('width', w, 'important');
+    input.style.setProperty('min-width', w, 'important');
   }
 
   function animateSteppers() {
