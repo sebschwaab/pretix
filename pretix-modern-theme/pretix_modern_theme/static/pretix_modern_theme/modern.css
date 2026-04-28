@@ -1069,33 +1069,69 @@ input[type="checkbox"], input[type="radio"] {
 
 /* ── 20. FOOTER ───────────────────────────────────────────────────────── */
 .mt-footer {
+  margin-top: 48px;
+  padding: 28px 24px 24px;
   border-top: 1px solid var(--border);
-  margin-top: 32px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  text-align: center;
 }
 
 .mt-footer-links {
-  list-style: none; padding: 0; margin: 0;
-  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 0;
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 0;
 }
-.mt-footer-links li { display: inline-flex; align-items: center; }
-.mt-footer-links li + li::before { content: ' · '; color: var(--text-3); margin: 0 8px; white-space: pre; }
-.mt-footer-links li:last-child { margin-left: auto; }
-/* Fix missing space between anchor and following text in poweredby string */
-.mt-footer-links li:last-child a::after { content: ' '; }
+
+.mt-footer-links li {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Dot separator between items */
+.mt-footer-links li + li::before {
+  content: '·';
+  color: var(--text-3);
+  margin: 0 10px;
+  font-size: .8rem;
+}
+
+/* Remove last-child push-right — we center everything */
+.mt-footer-links li:last-child { margin-left: 0; }
+
+/* "Powered by" last item on its own line, slightly dimmer */
+.mt-footer-links li:last-child {
+  flex-basis: 100%;
+  justify-content: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.mt-footer-links li:last-child::before { display: none; }
 
 .mt-footer-links a,
 .mt-footer-links button.btn-link {
   color: var(--text-2) !important;
-  font-size: .86rem; font-weight: 500;
+  font-size: .84rem;
+  font-weight: 500;
   padding: 4px 0 !important;
+  transition: color 150ms var(--ease);
 }
 .mt-footer-links a:hover,
 .mt-footer-links button.btn-link:hover {
   color: var(--primary) !important;
   text-decoration: underline !important;
 }
+
+/* Powered-by text slightly more muted */
+.mt-footer-links li:last-child a,
+.mt-footer-links li:last-child span {
+  font-size: .78rem !important;
+  color: var(--text-3) !important;
+}
+.mt-footer-links li:last-child a:hover { color: var(--text-2) !important; }
 
 .site-notice-top, .site-notice-bottom {
   background: var(--surface);
@@ -1248,7 +1284,20 @@ input[type="file"]:hover::file-selector-button {
   }
 
   .mt-nav-spacer { display: none; }
-  .mt-brand { font-size: 1rem; }
+
+  /* Center brand between left edge and burger */
+  .mt-header-inner { position: relative; }
+  .mt-brand {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100% - 100px);
+    text-align: center;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   /* ── Cart rows: 2-column grid on tablet too ────────────────────── */
   .cart-row {
@@ -1350,10 +1399,8 @@ input[type="file"]:hover::file-selector-button {
   .dl-horizontal dt, .dl-horizontal dd { float: none; width: 100%; margin-left: 0; }
   .dl-horizontal dd { margin-bottom: 6px; }
 
-  .mt-footer-links { flex-direction: column; align-items: flex-start; gap: 0; }
-  .mt-footer-links li + li::before { display: none; }
-  .mt-footer-links li { padding: 5px 0; }
-  .mt-footer-links li:last-child { margin-left: 0; margin-top: 14px; }
+  .mt-footer-links { gap: 0; }
+  .mt-footer-links li:last-child { margin-top: 8px; padding-top: 8px; }
 
   /* Product cards: Bootstrap cols stack naturally on mobile */
   article.product-row.simple { padding: 16px; }
