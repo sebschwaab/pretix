@@ -1,0 +1,47 @@
+{% extends "pretixpresale/organizers/base.html" %}
+{% load i18n %}
+{% load icon %}
+{% load eventurl %}
+
+{% block content %}
+<div class="mt-wrapper" style="padding-top:32px">
+
+  {# ── Account info card ──────────────────────────────────────────────── #}
+  <div class="mt-account-card">
+    <div class="mt-account-info">
+      <div>
+        <p class="mt-account-name">{{ customer.name }}</p>
+        <p class="mt-account-email">{{ customer.email }}</p>
+        {% if customer.phone %}
+          <p class="mt-account-phone">{% icon "phone" %} {{ customer.phone }}</p>
+        {% endif %}
+        <p class="mt-account-actions">
+          <a href="{% eventurl request.organizer "presale:organizer.customer.change" %}">
+            {% icon "edit" %} {% trans "Change account information" %}
+          </a>
+          <a href="{% eventurl request.organizer "presale:organizer.customer.password" %}">
+            {% icon "key" %} {% trans "Change password" %}
+          </a>
+        </p>
+      </div>
+      <div class="mt-account-id">
+        <span class="mt-account-id-label">{% trans "Customer ID" %}</span>
+        <span class="mt-account-id-value">#{{ customer.identifier }}</span>
+      </div>
+    </div>
+  </div>
+
+  {# ── Sub-nav tabs ───────────────────────────────────────────────────── #}
+  <nav class="mt-subnav" aria-label="{% trans "customer account information" %}">
+    {% for nav in sub_nav %}
+      <a href="{{ nav.url }}" class="mt-subnav-tab{% if nav.active %} active{% endif %}">
+        {% icon nav.icon %}{{ nav.label }}
+      </a>
+    {% endfor %}
+  </nav>
+
+  {# ── Page content ───────────────────────────────────────────────────── #}
+  {% block inner %}{% endblock %}
+
+</div>
+{% endblock %}
