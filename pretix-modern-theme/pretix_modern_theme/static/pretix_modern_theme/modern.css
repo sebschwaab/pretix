@@ -1494,7 +1494,91 @@ input[type="file"]:hover::file-selector-button {
   white-space: nowrap;
 }
 
-/* ── 25. CHECKOUT FORM — DARK MODE OVERRIDES ──────────────────────────── */
+/* ── 25. CART Q&A (dl-indented) ───────────────────────────────────────── */
+
+/* Container: subtle card inside the product cell */
+.dl-indented {
+  margin: 8px 0 2px !important;
+  padding: 0 !important;
+  border-left: 3px solid var(--border);
+  padding-left: 10px !important;
+}
+
+/* Attendee name / email (sr-only dt, dd.toplevel) */
+.dl-indented dd.toplevel {
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--text) !important;
+  padding-left: 0 !important;
+  margin-bottom: 2px !important;
+}
+
+/* Question label (dt) */
+.dl-indented dt {
+  font-size: .68rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-3) !important;
+  margin-top: 8px !important;
+  margin-bottom: 1px;
+  line-height: 1.2;
+}
+.dl-indented dt:first-of-type { margin-top: 4px !important; }
+
+/* Answer value (dd) */
+.dl-indented dd:not(.toplevel) {
+  font-size: .85rem;
+  color: var(--text) !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  margin-bottom: 0;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* File/link answers — pill style */
+.dl-indented dd a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .78rem !important;
+  color: var(--primary) !important;
+  background: rgba(99,102,241,.08);
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-decoration: none !important;
+  border: 1px solid rgba(99,102,241,.2);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.dl-indented dd a:hover {
+  background: rgba(99,102,241,.18) !important;
+  text-decoration: none !important;
+}
+[data-theme="dark"] .dl-indented dd a {
+  background: rgba(99,102,241,.14);
+  border-color: rgba(99,102,241,.3);
+}
+
+/* Image thumbnails (signature preview) */
+.answer-thumb img {
+  display: block;
+  max-height: 72px !important;
+  max-width: 100%;
+  width: auto !important;
+  height: auto !important;
+  margin-top: 6px !important;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  object-fit: contain;
+}
+
+/* ── 27. CHECKOUT FORM — DARK MODE OVERRIDES ──────────────────────────── */
 
 /* Profile autofill / save-to-profile banners:
    Bootstrap hard-codes background:#f5f5f5 via $panel-footer-bg */
