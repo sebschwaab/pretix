@@ -100,15 +100,16 @@ var pretixstripe = {
                         pretixstripe.paymentRequest = null;
                     }
                     if ($("#stripe-card-number").length) {
+                        var _isDark = document.documentElement.getAttribute('data-theme') === 'dark';
                         var _cardStyle = {
                             'style': {
                                 'base': {
                                     'fontFamily': 'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
                                     'fontSize': '15px',
-                                    'color': '#1f2937',
+                                    'color': _isDark ? '#f1f5f9' : '#1f2937',
                                     'lineHeight': '1.5',
                                     '::placeholder': {
-                                        color: 'rgba(100,116,139,0.7)',
+                                        color: _isDark ? 'rgba(148,163,184,0.8)' : 'rgba(100,116,139,0.7)',
                                     },
                                 },
                                 'invalid': {
@@ -156,10 +157,10 @@ var pretixstripe = {
                                 'base': {
                                     'fontFamily': 'system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
                                     'fontSize': '15px',
-                                    'color': '#1f2937',
+                                    'color': _isDark ? '#f1f5f9' : '#1f2937',
                                     'lineHeight': '1.5',
                                     '::placeholder': {
-                                        color: 'rgba(100,116,139,0.7)',
+                                        color: _isDark ? 'rgba(148,163,184,0.8)' : 'rgba(100,116,139,0.7)',
                                     },
                                 },
                                 'invalid': {

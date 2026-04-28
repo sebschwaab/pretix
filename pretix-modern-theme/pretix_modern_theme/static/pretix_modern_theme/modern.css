@@ -1380,7 +1380,21 @@ input[type="file"]:hover::file-selector-button {
   }
 }
 
-/* ── 23. DARK SCROLLBARS ──────────────────────────────────────────────── */
+/* ── 23. DARK MODE — BTN-DEFAULT ─────────────────────────────────────── */
+/* btn-default in dark mode: use surface-2 so it's visually distinct from the page bg */
+[data-theme="dark"] .btn-default {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+[data-theme="dark"] .btn-default:hover,
+[data-theme="dark"] .btn-default:focus {
+  background: #475569 !important;
+  border-color: var(--primary) !important;
+  color: var(--text) !important;
+}
+
+/* ── 23b. DARK SCROLLBARS ─────────────────────────────────────────────── */
 [data-theme="dark"] ::-webkit-scrollbar { width: 8px; height: 8px; }
 [data-theme="dark"] ::-webkit-scrollbar-track { background: var(--bg); }
 [data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -1466,9 +1480,19 @@ input[type="file"]:hover::file-selector-button {
   height: 1px;
   background: var(--border);
 }
-.stripe-or .sep,
-.stripe-or .hr { display: contents; }
-.stripe-or .sepText { white-space: nowrap; }
+.stripe-or .sep { display: contents; }
+.stripe-or .hr  { display: none; }
+/* Reset pretix-stripe.css: .sepText was position:absolute top:50% — that makes it escape the container */
+.stripe-or .sepText {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  margin: 0 !important;
+  background: transparent !important;
+  width: auto !important;
+  padding: 0 !important;
+  white-space: nowrap;
+}
 
 /* ── 25. CHECKOUT FORM — DARK MODE OVERRIDES ──────────────────────────── */
 
@@ -1559,6 +1583,15 @@ input[type="file"]:hover::file-selector-button {
 [data-theme="dark"] canvas {
   background: var(--surface) !important;
   border-color: var(--border) !important;
+}
+/* Signature widget wrapper div that plugins render with inline white bg */
+[data-theme="dark"] .signature-widget,
+[data-theme="dark"] [class*="signature"],
+[data-theme="dark"] .draw-signature,
+[data-theme="dark"] .canvas-container {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
 }
 
 /* Checkbox + radio: ensure they render against the correct surface in dark mode */
