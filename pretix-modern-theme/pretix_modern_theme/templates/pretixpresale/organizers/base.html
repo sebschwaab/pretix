@@ -24,15 +24,11 @@
   {{ block.super }}
 {% endblock %}
 
-{# ── Brand: organizer logo or name in the navbar ──────────────────────── #}
+{# ── Brand: always organizer name in the navbar ───────────────────────── #}
 {% block navbar_brand %}
   <a href="{% eventurl organizer "presale:organizer.index" %}"
      class="mt-brand" title="{{ organizer.name }}">
-    {% if organizer_logo %}
-      <img src="{{ organizer_logo|thumb:'5000x36' }}" alt="{{ organizer.name }}" style="height:36px;width:auto;">
-    {% else %}
-      {{ organizer.name }}
-    {% endif %}
+    {{ organizer.name }}
   </a>
 {% endblock %}
 
@@ -59,14 +55,22 @@
 {# ── Above: no duplicate bar needed ─────────────────────────────────────── #}
 {% block above %}{% endblock %}
 
-{# ── Page: organizer logo (if large) + content ───────────────────────── #}
+{# ── Page: organizer logo (always shown if present) + content ────────── #}
 {% block page %}
-  {% if organizer_logo and organizer.settings.organizer_logo_image_large %}
-    <div class="mt-hero-image" role="banner">
-      <a href="{% eventurl organizer "presale:organizer.index" %}" title="{{ organizer.name }}">
-        <img src="{{ organizer_logo|thumb:'1200x400' }}" alt="{{ organizer.name }}" class="mt-hero-logo">
-      </a>
-    </div>
+  {% if organizer_logo %}
+    {% if organizer.settings.organizer_logo_image_large %}
+      <div class="mt-hero-image" role="banner">
+        <a href="{% eventurl organizer "presale:organizer.index" %}" title="{{ organizer.name }}">
+          <img src="{{ organizer_logo|thumb:'1200x400' }}" alt="{{ organizer.name }}" class="mt-hero-logo">
+        </a>
+      </div>
+    {% else %}
+      <div class="mt-organizer-logo-bar">
+        <a href="{% eventurl organizer "presale:organizer.index" %}" title="{{ organizer.name }}">
+          <img src="{{ organizer_logo|thumb:'5000x80' }}" alt="{{ organizer.name }}" style="height:64px;width:auto;">
+        </a>
+      </div>
+    {% endif %}
   {% endif %}
 
   {% if messages %}

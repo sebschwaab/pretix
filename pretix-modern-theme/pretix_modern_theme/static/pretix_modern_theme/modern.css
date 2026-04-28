@@ -265,6 +265,12 @@ code {
   padding: 28px 24px 20px;
 }
 .mt-hero-image .mt-hero-logo-link { padding: 0; }
+.mt-organizer-logo-bar {
+  text-align: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
 .mt-hero-image-date {
   margin: 14px 0 0;
   color: var(--text-2);
